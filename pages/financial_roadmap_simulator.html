@@ -1,0 +1,385 @@
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font-sans); }
+
+.container { padding: 1.5rem 0; }
+
+.tabs { display: flex; gap: 8px; margin-bottom: 1.5rem; flex-wrap: wrap; }
+.tab { padding: 6px 16px; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); font-size: 13px; cursor: pointer; background: transparent; color: var(--color-text-secondary); transition: all 0.15s; }
+.tab.active { background: var(--color-background-secondary); color: var(--color-text-primary); border-color: var(--color-border-primary); font-weight: 500; }
+
+.section { display: none; }
+.section.active { display: block; }
+
+.metric-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 1.5rem; }
+.metric { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 0.875rem 1rem; }
+.metric-label { font-size: 12px; color: var(--color-text-secondary); margin-bottom: 4px; }
+.metric-value { font-size: 20px; font-weight: 500; color: var(--color-text-primary); }
+.metric-sub { font-size: 11px; color: var(--color-text-tertiary); margin-top: 2px; }
+
+.phase-card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1.25rem; margin-bottom: 1rem; }
+.phase-header { display: flex; align-items: center; gap: 10px; margin-bottom: 1rem; }
+.phase-badge { font-size: 11px; font-weight: 500; padding: 3px 10px; border-radius: var(--border-radius-md); }
+.badge-now { background: #FAC775; color: #412402; }
+.badge-1y { background: #9FE1CB; color: #04342C; }
+.badge-2y { background: #B5D4F4; color: #042C53; }
+.phase-title { font-size: 15px; font-weight: 500; color: var(--color-text-primary); }
+.phase-subtitle { font-size: 12px; color: var(--color-text-secondary); }
+
+.budget-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 0.5px solid var(--color-border-tertiary); font-size: 13px; }
+.budget-row:last-child { border-bottom: none; }
+.budget-label { color: var(--color-text-secondary); display: flex; align-items: center; gap: 6px; }
+.budget-value { font-weight: 500; color: var(--color-text-primary); }
+.budget-pct { font-size: 11px; color: var(--color-text-tertiary); margin-left: 6px; }
+.budget-bar-wrap { width: 100%; height: 6px; background: var(--color-background-secondary); border-radius: 3px; margin-top: 4px; margin-bottom: 2px; }
+.budget-bar { height: 6px; border-radius: 3px; }
+
+.timeline-item { display: flex; gap: 16px; margin-bottom: 1rem; }
+.timeline-dot-col { display: flex; flex-direction: column; align-items: center; }
+.timeline-dot { width: 10px; height: 10px; border-radius: 50%; margin-top: 4px; flex-shrink: 0; }
+.timeline-line { width: 1px; flex: 1; background: var(--color-border-tertiary); margin-top: 4px; }
+.timeline-content { flex: 1; padding-bottom: 1rem; }
+.timeline-when { font-size: 11px; color: var(--color-text-tertiary); margin-bottom: 2px; }
+.timeline-title { font-size: 13px; font-weight: 500; color: var(--color-text-primary); }
+.timeline-desc { font-size: 12px; color: var(--color-text-secondary); margin-top: 2px; }
+.timeline-impact { font-size: 12px; color: #0F6E56; margin-top: 3px; font-weight: 500; }
+
+.slider-row { margin-bottom: 1.25rem; }
+.slider-label-row { display: flex; justify-content: space-between; margin-bottom: 6px; }
+.slider-label { font-size: 13px; color: var(--color-text-secondary); }
+.slider-val { font-size: 13px; font-weight: 500; color: var(--color-text-primary); }
+
+.chart-wrap { position: relative; width: 100%; height: 280px; margin: 1rem 0; }
+
+.proj-metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 1rem; }
+
+.goals-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.goal-card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1rem; }
+.goal-icon { font-size: 20px; margin-bottom: 8px; }
+.goal-title { font-size: 13px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 4px; }
+.goal-detail { font-size: 12px; color: var(--color-text-secondary); line-height: 1.5; }
+.goal-highlight { font-size: 13px; font-weight: 500; color: #0F6E56; margin-top: 6px; }
+
+.divider { height: 0.5px; background: var(--color-border-tertiary); margin: 1.25rem 0; }
+
+.section-title { font-size: 14px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 0.875rem; }
+</style>
+
+<div class="container">
+  <h2 class="sr-only">Simulador de roadmap financeiro do casal — Fortaleza-CE</h2>
+
+  <div class="tabs">
+    <button class="tab active" onclick="showTab('fases')">Fases do orçamento</button>
+    <button class="tab" onclick="showTab('projecao')">Projeção de patrimônio</button>
+    <button class="tab" onclick="showTab('linha')">Linha do tempo</button>
+    <button class="tab" onclick="showTab('metas')">Metas da fase 2</button>
+  </div>
+
+  <div id="fases" class="section active">
+    <div class="phase-card">
+      <div class="phase-header">
+        <span class="phase-badge badge-now">Agora</span>
+        <div>
+          <div class="phase-title">Modo reforma</div>
+          <div class="phase-subtitle">Foco total em quitar o AP</div>
+        </div>
+      </div>
+      <div id="bars-now"></div>
+    </div>
+
+    <div class="phase-card">
+      <div class="phase-header">
+        <span class="phase-badge badge-1y">~4 meses</span>
+        <div>
+          <div class="phase-title">Pós-reforma</div>
+          <div class="phase-subtitle">Reforma quitada, reserva e viagens</div>
+        </div>
+      </div>
+      <div id="bars-4m"></div>
+    </div>
+
+    <div class="phase-card">
+      <div class="phase-header">
+        <span class="phase-badge badge-2y">~1 ano</span>
+        <div>
+          <div class="phase-title">Fase 2 — qualidade de vida</div>
+          <div class="phase-subtitle">Investimentos, cursos, viagens</div>
+        </div>
+      </div>
+      <div id="bars-1y"></div>
+    </div>
+  </div>
+
+  <div id="projecao" class="section">
+    <div class="slider-row">
+      <div class="slider-label-row">
+        <span class="slider-label">Investimento mensal</span>
+        <span class="slider-val" id="inv-label">R$ 6.500</span>
+      </div>
+      <input type="range" min="1000" max="12000" step="500" value="6500" id="inv-slider" style="width:100%">
+    </div>
+    <div class="slider-row">
+      <div class="slider-label-row">
+        <span class="slider-label">Rendimento anual estimado</span>
+        <span class="slider-val" id="rate-label">12%</span>
+      </div>
+      <input type="range" min="8" max="18" step="1" value="12" id="rate-slider" style="width:100%">
+    </div>
+
+    <div class="proj-metrics">
+      <div class="metric">
+        <div class="metric-label">Em 1 ano</div>
+        <div class="metric-value" id="p1y">—</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Em 3 anos</div>
+        <div class="metric-value" id="p3y">—</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Em 5 anos</div>
+        <div class="metric-value" id="p5y">—</div>
+      </div>
+    </div>
+
+    <div class="chart-wrap">
+      <canvas id="projChart" role="img" aria-label="Gráfico de projeção de patrimônio ao longo de 5 anos com base nos sliders de investimento mensal e rendimento.">Projeção de patrimônio ao longo de 5 anos.</canvas>
+    </div>
+    <div style="display:flex;gap:16px;font-size:12px;color:var(--color-text-secondary);flex-wrap:wrap;">
+      <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:#1D9E75;"></span>Patrimônio acumulado</span>
+      <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:#5DCAA5;opacity:0.4;"></span>Total aportado</span>
+    </div>
+  </div>
+
+  <div id="linha" class="section">
+    <div id="timeline-items"></div>
+  </div>
+
+  <div id="metas" class="section">
+    <div class="metric-grid" style="margin-bottom:1.25rem;">
+      <div class="metric">
+        <div class="metric-label">Renda líquida</div>
+        <div class="metric-value">R$ 22k</div>
+        <div class="metric-sub">mantida</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Investimentos</div>
+        <div class="metric-value">R$ 6.500</div>
+        <div class="metric-sub">29,5% da renda</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Viagens/ano</div>
+        <div class="metric-value">R$ 24k</div>
+        <div class="metric-sub">fundo acumulado</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Cursos/certs</div>
+        <div class="metric-value">R$ 1.500</div>
+        <div class="metric-sub">por mês</div>
+      </div>
+    </div>
+
+    <div class="goals-grid">
+      <div class="goal-card">
+        <div class="goal-icon"><i class="ti ti-certificate" aria-hidden="true"></i></div>
+        <div class="goal-title">Certificações técnicas</div>
+        <div class="goal-detail">R$ 400/mês reservados. Cobre 2–3 certificações por ano (AWS, CKA, etc.)</div>
+        <div class="goal-highlight">~3 certs/ano</div>
+      </div>
+      <div class="goal-card">
+        <div class="goal-icon"><i class="ti ti-language" aria-hidden="true"></i></div>
+        <div class="goal-title">Inglês</div>
+        <div class="goal-detail">R$ 500/mês. Professor particular ou escola com foco em conversação e business.</div>
+        <div class="goal-highlight">Fluência em ~18 meses</div>
+      </div>
+      <div class="goal-card">
+        <div class="goal-icon"><i class="ti ti-plane" aria-hidden="true"></i></div>
+        <div class="goal-title">Viagens & experiências</div>
+        <div class="goal-detail">R$ 2.000/mês acumulados. Espanha + 2–3 viagens nacionais por ano.</div>
+        <div class="goal-highlight">R$ 24k/ano</div>
+      </div>
+      <div class="goal-card">
+        <div class="goal-icon"><i class="ti ti-trending-up" aria-hidden="true"></i></div>
+        <div class="goal-title">Investimentos</div>
+        <div class="goal-detail">R$ 6.500/mês. Reserva de emergência já completa. Foco em crescimento.</div>
+        <div class="goal-highlight">R$ 78k no 1º ano</div>
+      </div>
+      <div class="goal-card">
+        <div class="goal-icon"><i class="ti ti-heart" aria-hidden="true"></i></div>
+        <div class="goal-title">Saúde & bem-estar</div>
+        <div class="goal-detail">Muay Thai, box, Crossfit, vôlei — já incluídos nos fixos atuais.</div>
+        <div class="goal-highlight">Mantido</div>
+      </div>
+      <div class="goal-card">
+        <div class="goal-icon"><i class="ti ti-home-check" aria-hidden="true"></i></div>
+        <div class="goal-title">AP reformado</div>
+        <div class="goal-detail">Reforma quitada em ~4 meses. MRV + CAIXA como únicos custos de moradia.</div>
+        <div class="goal-highlight">R$ 1.757/mês fixos</div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+    <button class="tab" style="border-radius:var(--border-radius-md);padding:8px 16px;font-size:13px;" onclick="sendPrompt('Como devo dividir os R$ 6.500 de investimentos mensais na fase 2 entre renda fixa, Tesouro e renda variável?')">Como investir os R$ 6.500/mês? ↗</button>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+function showTab(id) {
+  document.querySelectorAll('.tab').forEach((t,i) => t.classList.remove('active'));
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  const tabs = ['fases','projecao','linha','metas'];
+  document.querySelectorAll('.tab')[tabs.indexOf(id)].classList.add('active');
+  document.getElementById(id).classList.add('active');
+}
+
+const fmt = v => 'R$ ' + Math.round(v).toLocaleString('pt-BR');
+
+const phases = [
+  {
+    id: 'bars-now',
+    total: 22000,
+    items: [
+      { label: 'Moradia & estrutura', value: 2191.81, color: '#378ADD' },
+      { label: 'Reforma AP', value: 8000, color: '#E24B4A' },
+      { label: 'Transporte', value: 766.66, color: '#BA7517' },
+      { label: 'Contador / PJ', value: 1355, color: '#888780' },
+      { label: 'Vida & saúde', value: 1898.53, color: '#1D9E75' },
+      { label: 'Metas & projetos', value: 1283.90, color: '#D4537E' },
+      { label: 'Investimentos', value: 2500, color: '#7F77DD' },
+      { label: 'Lazer & imprevistos', value: 2000, color: '#639922' }
+    ]
+  },
+  {
+    id: 'bars-4m',
+    total: 22000,
+    items: [
+      { label: 'Moradia & estrutura', value: 2191.81, color: '#378ADD' },
+      { label: 'Transporte', value: 766.66, color: '#BA7517' },
+      { label: 'Contador / PJ', value: 1355, color: '#888780' },
+      { label: 'Vida & saúde', value: 1898.53, color: '#1D9E75' },
+      { label: 'Viagem Espanha (poupança)', value: 395, color: '#D4537E' },
+      { label: 'Reserva de emergência', value: 3000, color: '#E24B4A' },
+      { label: 'Investimentos', value: 1500, color: '#7F77DD' },
+      { label: 'Lazer & imprevistos', value: 2000, color: '#639922' },
+      { label: 'Flexível', value: 8893, color: '#B4B2A9' }
+    ]
+  },
+  {
+    id: 'bars-1y',
+    total: 22000,
+    items: [
+      { label: 'Moradia & estrutura', value: 2191.81, color: '#378ADD' },
+      { label: 'Transporte', value: 766.66, color: '#BA7517' },
+      { label: 'Contador / PJ', value: 1355, color: '#888780' },
+      { label: 'Vida & saúde', value: 1898.53, color: '#1D9E75' },
+      { label: 'Projetos pessoais', value: 1500, color: '#D4537E' },
+      { label: 'Viagens & experiências', value: 2000, color: '#EF9F27' },
+      { label: 'Investimentos', value: 6500, color: '#7F77DD' },
+      { label: 'Lazer & imprevistos', value: 1500, color: '#639922' },
+      { label: 'Reserva/flexível', value: 4288, color: '#B4B2A9' }
+    ]
+  }
+];
+
+phases.forEach(ph => {
+  const container = document.getElementById(ph.id);
+  ph.items.forEach(item => {
+    const w = Math.round(item.value / ph.total * 100);
+    container.innerHTML += `
+      <div class="budget-row">
+        <span class="budget-label">${item.label}</span>
+        <span class="budget-value">${fmt(item.value)}<span class="budget-pct">${w}%</span></span>
+      </div>
+      <div class="budget-bar-wrap"><div class="budget-bar" style="width:${w}%;background:${item.color};"></div></div>
+    `;
+  });
+});
+
+const timeline = [
+  { when: 'Agora', title: 'Aluguel e seguro obra encerram', desc: 'Despesas temporárias de moradia eliminadas', impact: '+R$ 1.296/mês liberados', color: '#EF9F27' },
+  { when: '~4 meses', title: 'Reforma do AP quitada', desc: 'R$ 30k pagos em ~4 meses com R$ 8k/mês', impact: '+R$ 8.000/mês liberados', color: '#E24B4A' },
+  { when: '~5 meses', title: 'Reserva de emergência completa', desc: 'R$ 15k acumulados — 6x os custos fixos', impact: '+R$ 3.000/mês migram pra investimentos', color: '#1D9E75' },
+  { when: '~6 meses', title: 'Fase 2 começa', desc: 'Cursos, inglês, fundo de viagens, investimentos plenos', impact: 'R$ 6.500/mês investidos', color: '#7F77DD' },
+  { when: '~12 meses', title: 'Viagem Espanha', desc: 'Fundo acumulado com R$ 2k/mês desde a fase 2', impact: 'R$ 12–14k disponíveis para a viagem', color: '#D4537E' },
+  { when: '~18 meses', title: 'Primeira certificação AWS + inglês avançado', desc: 'Cadência de estudo consistente e certificações técnicas', impact: 'Valorização de carreira internacional', color: '#378ADD' },
+  { when: '2–3 anos', title: 'AP da MRV pronto', desc: 'Saída definitiva de aluguel', impact: '+R$ 1.757/mês liberados', color: '#BA7517' }
+];
+
+const tl = document.getElementById('timeline-items');
+timeline.forEach((item, i) => {
+  tl.innerHTML += `
+    <div class="timeline-item">
+      <div class="timeline-dot-col">
+        <div class="timeline-dot" style="background:${item.color};"></div>
+        ${i < timeline.length - 1 ? '<div class="timeline-line"></div>' : ''}
+      </div>
+      <div class="timeline-content">
+        <div class="timeline-when">${item.when}</div>
+        <div class="timeline-title">${item.title}</div>
+        <div class="timeline-desc">${item.desc}</div>
+        <div class="timeline-impact">${item.impact}</div>
+      </div>
+    </div>
+  `;
+});
+
+let projChart;
+function buildChart(monthly, annualRate) {
+  const months = 60;
+  const mr = annualRate / 100 / 12;
+  const labels = [];
+  const patrimonio = [];
+  const aportado = [];
+  let acc = 0;
+  for (let m = 1; m <= months; m++) {
+    acc = acc * (1 + mr) + monthly;
+    if (m % 6 === 0 || m === 1) {
+      labels.push('M' + m);
+      patrimonio.push(Math.round(acc));
+      aportado.push(monthly * m);
+    }
+  }
+  const p1 = Math.round(monthly * 12 * (1 + annualRate / 100));
+  const p3 = Math.round(monthly * ((Math.pow(1 + mr, 36) - 1) / mr));
+  const p5 = Math.round(monthly * ((Math.pow(1 + mr, 60) - 1) / mr));
+  document.getElementById('p1y').textContent = fmt(p1);
+  document.getElementById('p3y').textContent = fmt(p3);
+  document.getElementById('p5y').textContent = fmt(p5);
+
+  const data = {
+    labels,
+    datasets: [
+      { label: 'Patrimônio', data: patrimonio, backgroundColor: 'rgba(29,158,117,0.15)', borderColor: '#1D9E75', borderWidth: 2, fill: true, tension: 0.4, pointRadius: 3 },
+      { label: 'Aportado', data: aportado, backgroundColor: 'rgba(93,202,165,0.1)', borderColor: '#5DCAA5', borderWidth: 1.5, borderDash: [4,4], fill: false, tension: 0.4, pointRadius: 0 }
+    ]
+  };
+  if (projChart) projChart.destroy();
+  projChart = new Chart(document.getElementById('projChart'), {
+    type: 'line',
+    data,
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { ticks: { callback: v => 'R$' + (v >= 1000000 ? (v / 1000000).toFixed(1) + 'M' : v >= 1000 ? (v / 1000).toFixed(0) + 'k' : v), font: { size: 11 } }, grid: { color: 'rgba(128,128,128,0.1)' } },
+        x: { ticks: { font: { size: 11 } }, grid: { display: false } }
+      }
+    }
+  });
+}
+
+const invSlider = document.getElementById('inv-slider');
+const rateSlider = document.getElementById('rate-slider');
+invSlider.addEventListener('input', () => {
+  document.getElementById('inv-label').textContent = 'R$ ' + parseInt(invSlider.value).toLocaleString('pt-BR');
+  buildChart(+invSlider.value, +rateSlider.value);
+});
+rateSlider.addEventListener('input', () => {
+  document.getElementById('rate-label').textContent = rateSlider.value + '%';
+  buildChart(+invSlider.value, +rateSlider.value);
+});
+
+document.querySelector('[onclick="showTab(\'projecao\')"]').addEventListener('click', () => setTimeout(() => buildChart(+invSlider.value, +rateSlider.value), 50));
+setTimeout(() => buildChart(6500, 12), 200);
+</script>
