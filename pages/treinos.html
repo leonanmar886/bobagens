@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Plano de Treinos</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#0e0e10;--surface:#18181c;--border:#2a2a30;
+    --him:#e8854a;--him-dim:rgba(232,133,74,0.12);
+    --her:#b07fe8;--her-dim:rgba(176,127,232,0.12);
+    --both:#4ab8e8;--both-dim:rgba(74,184,232,0.10);
+    --text:#e8e8ec;--muted:#6b6b78;--card-bg:#1c1c22;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;padding:32px 20px}
+  header{text-align:center;margin-bottom:48px}
+  header h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.8rem,8vw,5rem);letter-spacing:.05em;line-height:1;background:linear-gradient(135deg,var(--him) 0%,var(--her) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+  header p{color:var(--muted);font-size:.85rem;letter-spacing:.12em;text-transform:uppercase;margin-top:6px}
+  .legend{display:flex;justify-content:center;gap:24px;margin-bottom:40px;flex-wrap:wrap}
+  .legend-item{display:flex;align-items:center;gap:8px;font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+  .dot{width:10px;height:10px;border-radius:50%}
+  .dot-him{background:var(--him)}.dot-her{background:var(--her)}.dot-both{background:var(--both)}
+  .tabs{display:flex;justify-content:center;gap:4px;margin-bottom:36px;flex-wrap:wrap}
+  .tab{padding:8px 20px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:.82rem;font-weight:500;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;transition:all .2s}
+  .tab:hover{border-color:var(--text);color:var(--text)}
+  .tab.active{background:var(--text);color:var(--bg);border-color:var(--text)}
+  .view{display:none}.view.active{display:block}
+  .split{display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:1100px;margin:0 auto}
+  @media(max-width:680px){.split{grid-template-columns:1fr}}
+  .person-col h2{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:.08em;margin-bottom:16px;padding-bottom:10px;border-bottom:2px solid var(--border)}
+  .person-col.him h2{color:var(--him)}.person-col.her h2{color:var(--her)}.person-col.both h2{color:var(--both)}
+  .day-card{background:var(--card-bg);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:16px;position:relative;overflow:hidden}
+  .day-card::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%}
+  .him .day-card::before{background:var(--him)}.her .day-card::before{background:var(--her)}.both .day-card::before{background:var(--both)}
+  .day-label{font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+  .day-title{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:.06em;margin-bottom:14px}
+  .him .day-title{color:var(--him)}.her .day-title{color:var(--her)}.both .day-title{color:var(--both)}
+  .session-tag{display:inline-block;font-size:.68rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;padding:2px 10px;border-radius:20px;margin-bottom:14px}
+  .him .session-tag{background:var(--him-dim);color:var(--him)}.her .session-tag{background:var(--her-dim);color:var(--her)}.both .session-tag{background:var(--both-dim);color:var(--both)}
+  .muscle-group{font-size:.75rem;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:12px}
+  table{width:100%;border-collapse:collapse;font-size:.82rem}
+  thead tr th{text-align:left;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:0 0 8px 0;border-bottom:1px solid var(--border)}
+  thead tr th:not(:first-child){text-align:center}
+  tbody tr td{padding:7px 0;border-bottom:1px solid rgba(255,255,255,.04);vertical-align:middle}
+  tbody tr:last-child td{border-bottom:none}
+  td.exercise{font-weight:500;color:var(--text)}
+  td.sets,td.reps,td.rest{text-align:center;color:var(--muted);font-size:.78rem}
+  .sec-lbl{display:block;font-size:.66rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);padding:10px 0 2px 0;border-top:1px solid var(--border);margin-top:6px}
+  .note{margin-top:12px;font-size:.75rem;color:var(--muted);background:rgba(255,255,255,.03);border-radius:6px;padding:8px 12px;line-height:1.5}
+  .full-width{grid-column:1 / -1}
+  .both-split{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:16px}
+  @media(max-width:680px){.both-split{grid-template-columns:1fr}}
+  .both-split-col h3{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:.08em;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+  .him-sub h3{color:var(--him)}.her-sub h3{color:var(--her)}
+  .schedule-grid{max-width:900px;margin:0 auto;display:flex;flex-direction:column;gap:12px}
+  .sched-row{background:var(--card-bg);border:1px solid var(--border);border-radius:10px;padding:16px 20px;display:grid;grid-template-columns:100px 1fr 1fr;gap:16px;align-items:start}
+  @media(max-width:600px){.sched-row{grid-template-columns:1fr}}
+  .sched-day{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:.06em;color:var(--muted)}
+  .sched-person{font-size:.8rem}
+  .sched-person strong{display:block;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px}
+  .him-label{color:var(--him)}.her-label{color:var(--her)}.both-label{color:var(--both)}
+  .sched-person ul{list-style:none;display:flex;flex-direction:column;gap:3px}
+  .sched-person li{font-size:.78rem;color:var(--muted);padding-left:10px;position:relative}
+  .sched-person li::before{content:'·';position:absolute;left:0}
+</style>
+</head>
+<body>
+<header>
+  <h1>Plano de Treinos</h1>
+  <p>Semana completa · Musculação + Rotina</p>
+</header>
+<div class="legend">
+  <div class="legend-item"><span class="dot dot-him"></span> Ele</div>
+  <div class="legend-item"><span class="dot dot-her"></span> Ela</div>
+  <div class="legend-item"><span class="dot dot-both"></span> Ambos</div>
+</div>
+<div class="tabs">
+  <button class="tab active" onclick="showView('split',this)">Treinos Detalhados</button>
+  <button class="tab" onclick="showView('schedule',this)">Visão Semanal</button>
+</div>
+
+<div class="view active" id="view-split">
+ <div class="split">
+
+  <div class="person-col him">
+   <h2>Ele — Costas · Ombros · Inferiores</h2>
+
+   <div class="day-card">
+    <div class="day-label">Segunda · 06h–07h</div>
+    <div class="day-title">Costas — Volume</div>
+    <span class="session-tag">Puxada + Remada</span>
+    <div class="muscle-group">Lat. dorsal · Romboides · Bíceps</div>
+    <table>
+     <thead><tr><th>Exercício</th><th>Séries</th><th>Reps</th><th>Descanso</th></tr></thead>
+     <tbody>
+      <tr><td class="exercise">Puxada frente (barra larga)</td><td class="sets">4</td><td class="reps">10–12</td><td class="rest">90s</td></tr>
+      <tr><td class="exercise">Remada curvada c/ barra</td><td class="sets">4</td><td class="reps">8–10</td><td class="rest">90s</td></tr>
+      <tr><td class="exercise">Remada unilateral haltere</td><td class="sets">3</td><td class="reps">10–12</td><td class="rest">75s</td></tr>
+      <tr><td class="exercise">Puxada neutra (triângulo)</td><td class="sets">3</td><td class="reps">12</td><td class="rest">75s</td></tr>
+      <tr><td class="exercise">Rosca direta (finalizador)</td><td class="sets">3</td><td class="reps">12</td><td class="rest">60s</td></tr>
+     </tbody>
+    </table>
+    <div class="note">⚡ Antes do Muay Thai — técnica limpa, sem falha muscular total.</div>
+   </div>
+
+   <div class="day-card">
+    <div class="day-label">Quarta · 18h–19h</div>
+    <div class="day-title">Inferiores — Força e Volume</div>
+    <span class="session-tag">Quad · Posterior · Glúteo</span>
+    <div class="muscle-group">Quadríceps · Isquios · Glúteo · Panturrilha</div>
+    <table>
+     <thead><tr><th>Exercício</th><th>Séries</th><th>Reps</th><th>Descanso</th></tr></thead>
+     <tbody>
+      <tr><td class="exercise">Agachamento livre (barra)</td><td class="sets">4</td><td class="reps">6–8</td><td class="rest">2min</td></tr>
+      <tr><td class="exercise">Leg press 45°</td><td class="sets">4</td><td class="reps">10–12</td><td class="rest">90s</td></tr>
+      <tr><td class="exercise">Stiff c/ barra</td><td class="sets">3</td><td class="reps">10</td><td class="rest">90s</td></tr>
+      <tr><td class="exercise">Afundo c/ halteres</td><td class="sets">3</td><td class="reps">10 cada</td><td class="rest">75s</td></tr>
+      <tr><td class="exercise">Mesa flexora</td><td class="sets">3</td><td class="reps">12</td><td class="rest">60s</td></tr>
+      <tr><td class="exercise">Panturrilha em pé (máquina)</td><td class="sets">3</td><td class="reps">15–20</td><td class="rest">60s</td></tr>
+     </tbody>
+    </table>
+    <div class="note">⚡ Substituiu Ombros — inferiores antes do Muay Thai. Agachamento pesado primeiro enquanto fresco.</div>
+   </div>
+
+   <div class="day-card">
+    <div class="day-label">Quinta · 06h–07h</div>
+    <div class="day-title">Costas — Força</div>
+    <span class="session-tag">Deadlift + Barra Fixa</span>
+    <div class="muscle-group">Cadeia posterior · Eretores · Lat.</div>
+    <table>
+     <thead><tr><th>Exercício</th><th>Séries</th><th>Reps</th><th>Descanso</th></tr></thead>
+     <tbody>
+      <tr><td class="exercise">Levantamento terra</td><td class="sets">4</td><td class="reps">5–6</td><td class="rest">2min</td></tr>
+      <tr><td class="exercise">Barra fixa (peso corporal)</td><td class="sets">4</td><td class="reps">máx</td><td class="rest">2min</td></tr>
+      <tr><td class="exercise">Remada baixa (polia)</td><td class="sets">3</td><td class="reps">10</td><td class="rest">90s</td></tr>
+      <tr><td class="exercise">Puxada supinada</td><td class="sets">3</td><td class="reps">10–12</td><td class="rest">75s</td></tr>
+     </tbody>
+    </table>
+    <div class="note">⚡ Antes do Boxe — cargas altas, foco em costas espessa. Deadlift enquanto fresco.</div>
+   </div>
+  </div>
+
+  <div class="person-col her">
+   <h2>Ela — Glúteos · Inferiores · Core</h2>
+
+   <div class="day-card">
+    <div class="day-label">Segunda · 06h–07h</div>
+    <div class="day-title">Glúteos — Ativação e Base</div>
+    <span class="session-tag">Hip Hinge · Agachamento</span>
+    <div class="muscle-group">Glúteo máx. · Isquios · Quadríceps</div>
+    <table>
+     <thead><tr><th>Exercício</th><th>Séries</th><th>Reps</th><th>Descanso</th></tr></thead>
+     <tbody>
+      <tr><td class="exercise">Agachamento livre (barra)</td><td class="sets">4</td><td class="reps">10–12</td><td class="rest">90s</td></tr>
+      <tr><td class="exercise">Stiff c/ halteres</td><td class="sets">4</td><td class="reps">10–12</td><td class="rest">90s</td></tr>
+      <tr><td class="exercise">Afundo búlgaro</td><td class="sets">3</td><td class="reps">10 cada</td><td class="rest">75s</td></tr>
+      <tr><td class="exercise">Cadeira abdutora</td><td class="sets">3</td><td class="reps">15–20</td><td class="rest">60s</td></tr>
+      <tr><td class="exercise">Elevação pélvica (banco)</td><td class="sets">3</td><td class="reps">15</td><td class="rest">60s</td></tr>
+     </tbody>
+    </table>
+    <div class="note">⚡ Antes do Greenbike — base sólida de glúteos e aquecimento de quadril.</div>
+   </div>
+
+   <div class="day-card">
+    <div class="day-label">Quarta · 18h–19h</div>
+    <div class="day-title">Posterior + Core</div>
+    <span class="session-tag">Isquios · Glúteo Médio · Core</span>
+    <div class="muscle-group">Isquiotibiais · Glúteo médio · Core completo</div>
+    <table>
+     <thead><tr><th>Exercício</th><th>Séries</th><th>Reps</th><th>Descanso</th></tr></thead>
+     <tbody>
+      <tr><td class="exercise">Leg press 45° (pegada fechada)</td><td class="sets">4</td><td class="reps">12</td><td class="rest">90s</td></tr>
+      <tr><td class="exercise">Mesa flexora</td><td class="sets">4</td><td class="reps">10–12</td><td class="rest">75s</td></tr>
+      <tr><td class="exercise">Agachamento sumo (haltere)</td><td class="sets">3</td><td class="reps">12–15</td><td class="rest">75s</td></tr>
+      <tr><td class="exercise">Abdução c/ elástico (lateral)</td><td class="sets">3</td><td class="reps">20</td><td class="rest">45s</td></tr>
+      <tr><td class="exercise"><span class="sec-lbl">Core</span>Prancha frontal</td><td class="sets">3</td><td class="reps">40s</td><td class="rest">45s</td></tr>
+      <tr><td class="exercise">Dead bug</td><td class="sets">3</td><td class="reps">10 cada</td><td class="rest">45s</td></tr>
+      <tr><td class="exercise">Elevação de quadril (glúteo + core)</td><td class="sets">3</td><td class="reps">15</td><td class="rest">45s</td></tr>
+     </tbody>
+    </table>
+    <div class="note">⚡ Antes do Greenbike — core ao final para não comprometer os inferiores.</div>
+   </div>
+
+   <div class="day-card">
+    <div class="day-label">Quinta · (manhã ou tarde)</div>
+    <div class="day-title">Glúteos — Força + Core</div>
+    <span class="session-tag">Hip Thrust Pesado · Core</span>
+    <div class="muscle-group">Glúteo máximo · Estabilidade · Core</div>
+    <table>
+     <thead><tr><th>Exercício</th><th>Séries</th><th>Reps</th><th>Descanso</th></tr></thead>
+     <tbody>
+      <tr><td class="exercise">Hip Thrust c/ barra (pesado)</td><td class="sets">5</td><td class="reps">6–8</td><td class="rest">2min</td></tr>
+      <tr><td class="exercise">Agachamento hack (máquina)</td><td class="sets">4</td><td class="reps">10</td><td class="rest">90s</td></tr>
+      <tr><td class="exercise">Kick back c/ polia</td><td class="sets">3</td><td class="reps">15 cada</td><td class="rest">45s</td></tr>
+      <tr><td class="exercise"><span class="sec-lbl">Core</span>Rollout (roda abdominal)</td><td class="sets">3</td><td class="reps">8–10</td><td class="rest">60s</td></tr>
+      <tr><td class="exercise">Prancha lateral D + E (SS)</td><td class="sets">3</td><td class="reps">30s cada</td><td class="rest">45s</td></tr>
+      <tr><td class="exercise">Russian twist c/ peso</td><td class="sets">3</td><td class="reps">20 total</td><td class="rest">45s</td></tr>
+     </tbody>
+    </table>
+    <div class="note">⚡ Antes do Vôlei às 19h — encerrar com antecedência. Core ao final, ainda funcional para o vôlei.</div>
+   </div>
+  </div>
+
+  <div class="person-col both full-width">
+   <h2>Ambos — Upper Completo · Terça 20h–21h</h2>
+   <div class="day-card">
+    <div class="day-label">Terça · 20h–21h · Após Funcional Areia</div>
+    <div class="day-title">Upper Body Completo</div>
+    <span class="session-tag">Push · Pull · Braços · Treino Conjunto</span>
+    <div class="muscle-group">Peitoral · Costas · Ombros · Bíceps · Tríceps</div>
+    <div class="both-split">
+     <div class="both-split-col him-sub">
+      <h3>Ele — Ênfase Costas/Ombros</h3>
+      <table>
+       <thead><tr><th>Exercício</th><th>Séries</th><th>Reps</th><th>Descanso</th></tr></thead>
+       <tbody>
+        <tr><td class="exercise">Supino inclinado c/ halteres</td><td class="sets">3</td><td class="reps">10–12</td><td class="rest">75s</td></tr>
+        <tr><td class="exercise">Remada cavalinho (polia)</td><td class="sets">4</td><td class="reps">10</td><td class="rest">75s</td></tr>
+        <tr><td class="exercise">Desenvolvimento Arnold</td><td class="sets">3</td><td class="reps">10</td><td class="rest">75s</td></tr>
+        <tr><td class="exercise">Face pull (deltoide post.)</td><td class="sets">3</td><td class="reps">15</td><td class="rest">60s</td></tr>
+        <tr><td class="exercise">SS: Rosca martelo + Tríceps corda</td><td class="sets">3</td><td class="reps">12+12</td><td class="rest">60s</td></tr>
+       </tbody>
+      </table>
+     </div>
+     <div class="both-split-col her-sub">
+      <h3>Ela — Superiores Completo</h3>
+      <table>
+       <thead><tr><th>Exercício</th><th>Séries</th><th>Reps</th><th>Descanso</th></tr></thead>
+       <tbody>
+        <tr><td class="exercise">Supino c/ halteres (neutro)</td><td class="sets">3</td><td class="reps">12</td><td class="rest">75s</td></tr>
+        <tr><td class="exercise">Puxada aberta (máquina)</td><td class="sets">3</td><td class="reps">12</td><td class="rest">75s</td></tr>
+        <tr><td class="exercise">Elevação lateral</td><td class="sets">3</td><td class="reps">15</td><td class="rest">60s</td></tr>
+        <tr><td class="exercise">Remada unilateral haltere</td><td class="sets">3</td><td class="reps">12 cada</td><td class="rest">60s</td></tr>
+        <tr><td class="exercise">SS: Rosca alternada + Tríceps testa</td><td class="sets">3</td><td class="reps">12+12</td><td class="rest">60s</td></tr>
+       </tbody>
+      </table>
+     </div>
+    </div>
+    <div class="note">⚡ Após funcional na areia (19–20h) — volume moderado, sem falha total. ~50min para os dois. Cargas individuais, exercícios paralelos.</div>
+   </div>
+  </div>
+
+ </div>
+</div>
+
+<div class="view" id="view-schedule">
+ <div class="schedule-grid">
+  <div class="sched-row">
+   <div class="sched-day">SEG</div>
+   <div class="sched-person"><strong class="him-label">Ele</strong><ul><li>06–07 · Musculação — Costas Volume</li><li>07–08 · Muay Thai</li></ul></div>
+   <div class="sched-person"><strong class="her-label">Ela</strong><ul><li>06–07 · Musculação — Glúteos Ativação</li><li>07–08 · Greenbike</li></ul></div>
+  </div>
+  <div class="sched-row">
+   <div class="sched-day">TER</div>
+   <div class="sched-person" style="grid-column:2 / -1"><strong class="both-label">Ambos</strong><ul><li>19–20 · Funcional Areia</li><li>20–21 · Musculação — Upper Completo (treino conjunto)</li></ul></div>
+  </div>
+  <div class="sched-row">
+   <div class="sched-day">QUA</div>
+   <div class="sched-person"><strong class="him-label">Ele</strong><ul><li>18–19 · Musculação — Inferiores</li><li>19–20 · Muay Thai</li></ul></div>
+   <div class="sched-person"><strong class="her-label">Ela</strong><ul><li>18–19 · Musculação — Posterior + Core</li><li>19–20 · Greenbike</li></ul></div>
+  </div>
+  <div class="sched-row">
+   <div class="sched-day">QUI</div>
+   <div class="sched-person"><strong class="him-label">Ele</strong><ul><li>06–07 · Musculação — Costas Força</li><li>07–08 · Boxe</li><li>19–22 · Vôlei</li></ul></div>
+   <div class="sched-person"><strong class="her-label">Ela</strong><ul><li>Musculação — Glúteos Força + Core (antes 18h)</li><li>19–22 · Vôlei</li></ul></div>
+  </div>
+  <div class="sched-row">
+   <div class="sched-day">SEX</div>
+   <div class="sched-person" style="grid-column:2 / -1"><strong class="both-label">Ambos</strong><ul><li>Crossfit — recuperação ativa</li></ul></div>
+  </div>
+  <div class="sched-row">
+   <div class="sched-day">SÁB</div>
+   <div class="sched-person" style="grid-column:2 / -1"><strong class="both-label">Ambos</strong><ul><li>Crossfit — volume + condicionamento</li></ul></div>
+  </div>
+  <div class="sched-row">
+   <div class="sched-day">DOM</div>
+   <div class="sched-person" style="grid-column:2 / -1;color:var(--muted);font-size:.82rem">Descanso completo 🌙</div>
+  </div>
+ </div>
+</div>
+
+<script>
+function showView(id,el){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('view-'+id).classList.add('active');
+  el.classList.add('active');
+}
+</script>
+</body>
+</html>
