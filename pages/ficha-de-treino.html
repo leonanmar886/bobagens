@@ -261,6 +261,55 @@ h1.title span{color:var(--oxide);}
   color:var(--bone-dim);
   flex-shrink:0;
 }
+.weight-input{
+  width:70px;
+  padding:4px 8px;
+  background:var(--panel-2);
+  border:1px solid var(--line-strong);
+  border-radius:6px;
+  color:var(--bone);
+  font-family:'JetBrains Mono', monospace;
+  font-size:13px;
+  text-align:center;
+  flex-shrink:0;
+  margin-left:8px;
+}
+.weight-input:focus{
+  outline:none;
+  border-color:var(--oxide);
+  background:var(--bg);
+}
+.weight-input::placeholder{
+  color:var(--bone-faint);
+  font-size:11px;
+}
+.clear-btn{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:var(--oxide);
+  color:var(--oxide-text);
+  border:none;
+  border-radius:8px;
+  padding:10px 16px;
+  font-family:'JetBrains Mono', monospace;
+  font-size:11px;
+  font-weight:700;
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+  cursor:pointer;
+  box-shadow:0 4px 12px rgba(196,80,46,0.3);
+  transition:all .2s;
+}
+.clear-btn:hover{
+  background:var(--brass);
+  color:var(--brass-text);
+  transform:translateY(-2px);
+  box-shadow:0 6px 16px rgba(201,162,39,0.4);
+}
+.clear-btn:active{
+  transform:translateY(0);
+}
 
 .day-foot{
   margin-top:10px;
@@ -424,11 +473,11 @@ h1.title span{color:var(--oxide);}
       <div class="counter" data-counter="d1">0/5</div>
     </div>
 
-    <label class="exline"><input type="checkbox" onchange="updateCount('d1')"><span class="exname">Supino reto (barra ou máquina)</span><span class="exsets">3×10–12</span></label>
-    <label class="exline"><input type="checkbox" onchange="updateCount('d1')"><span class="exname">Supino inclinado com halteres</span><span class="exsets">3×10–12</span></label>
-    <label class="exline"><input type="checkbox" onchange="updateCount('d1')"><span class="exname">Desenvolvimento de ombros sentado</span><span class="exsets">3×10–12</span></label>
-    <label class="exline"><input type="checkbox" onchange="updateCount('d1')"><span class="exname">Elevação lateral</span><span class="exsets">3×12–15</span></label>
-    <label class="exline"><input type="checkbox" onchange="updateCount('d1')"><span class="exname">Tríceps na polia</span><span class="exsets">3×12–15</span></label>
+    <label class="exline"><input type="checkbox" onchange="updateCount('d1')"><span class="exname">Supino reto (barra ou máquina)</span><span class="exsets">3×10–12</span><input type="number" class="weight-input" placeholder="kg" data-exercise="d1-ex1" onchange="saveWeight(this)"></label>
+    <label class="exline"><input type="checkbox" onchange="updateCount('d1')"><span class="exname">Supino inclinado com halteres</span><span class="exsets">3×10–12</span><input type="number" class="weight-input" placeholder="kg" data-exercise="d1-ex2" onchange="saveWeight(this)"></label>
+    <label class="exline"><input type="checkbox" onchange="updateCount('d1')"><span class="exname">Desenvolvimento de ombros sentado</span><span class="exsets">3×10–12</span><input type="number" class="weight-input" placeholder="kg" data-exercise="d1-ex3" onchange="saveWeight(this)"></label>
+    <label class="exline"><input type="checkbox" onchange="updateCount('d1')"><span class="exname">Elevação lateral</span><span class="exsets">3×12–15</span><input type="number" class="weight-input" placeholder="kg" data-exercise="d1-ex4" onchange="saveWeight(this)"></label>
+    <label class="exline"><input type="checkbox" onchange="updateCount('d1')"><span class="exname">Tríceps na polia</span><span class="exsets">3×12–15</span><input type="number" class="weight-input" placeholder="kg" data-exercise="d1-ex5" onchange="saveWeight(this)"></label>
 
     <div class="day-foot">Descanso entre séries: 60–90s</div>
   </div>
@@ -444,11 +493,11 @@ h1.title span{color:var(--oxide);}
       <div class="counter" data-counter="d2">0/5</div>
     </div>
 
-    <label class="exline"><input type="checkbox" onchange="updateCount('d2')"><span class="exname">Leg press 45°</span><span class="exsets">4×10–12</span></label>
-    <label class="exline"><input type="checkbox" onchange="updateCount('d2')"><span class="exname">Agachamento na máquina (Smith ou livre)</span><span class="exsets">3×10–12</span></label>
-    <label class="exline"><input type="checkbox" onchange="updateCount('d2')"><span class="exname">Cadeira extensora</span><span class="exsets">3×12–15</span></label>
-    <label class="exline"><input type="checkbox" onchange="updateCount('d2')"><span class="exname">Cadeira adutora</span><span class="exsets">3×15</span></label>
-    <label class="exline"><input type="checkbox" onchange="updateCount('d2')"><span class="exname">Panturrilha em pé</span><span class="exsets">3×15–20</span></label>
+    <label class="exline"><input type="checkbox" onchange="updateCount('d2')"><span class="exname">Leg press 45°</span><span class="exsets">4×10–12</span><input type="number" class="weight-input" placeholder="kg" data-exercise="d2-ex1" onchange="saveWeight(this)"></label>
+    <label class="exline"><input type="checkbox" onchange="updateCount('d2')"><span class="exname">Agachamento na máquina (Smith ou livre)</span><span class="exsets">3×10–12</span><input type="number" class="weight-input" placeholder="kg" data-exercise="d2-ex2" onchange="saveWeight(this)"></label>
+    <label class="exline"><input type="checkbox" onchange="updateCount('d2')"><span class="exname">Cadeira extensora</span><span class="exsets">3×12–15</span><input type="number" class="weight-input" placeholder="kg" data-exercise="d2-ex3" onchange="saveWeight(this)"></label>
+    <label class="exline"><input type="checkbox" onchange="updateCount('d2')"><span class="exname">Cadeira adutora</span><span class="exsets">3×15</span><input type="number" class="weight-input" placeholder="kg" data-exercise="d2-ex4" onchange="saveWeight(this)"></label>
+    <label class="exline"><input type="checkbox" onchange="updateCount('d2')"><span class="exname">Panturrilha em pé</span><span class="exsets">3×15–20</span><input type="number" class="weight-input" placeholder="kg" data-exercise="d2-ex5" onchange="saveWeight(this)"></label>
 
     <div class="day-foot">Descanso entre séries: 60–90s</div>
   </div>
@@ -464,11 +513,11 @@ h1.title span{color:var(--oxide);}
       <div class="counter" data-counter="d3">0/5</div>
     </div>
 
-    <label class="exline"><input type="checkbox" onchange="updateCount('d3')"><span class="exname">Puxada articulada (máquina)</span><span class="exsets">3×10–12</span></label>
-    <label class="exline"><input type="checkbox" onchange="updateCount('d3')"><span class="exname">Remada baixa no cabo</span><span class="exsets">3×10–12</span></label>
-    <label class="exline"><input type="checkbox" onchange="updateCount('d3')"><span class="exname">Remada unilateral com halter</span><span class="exsets">3×10–12</span></label>
-    <label class="exline"><input type="checkbox" onchange="updateCount('d3')"><span class="exname">Rosca direta</span><span class="exsets">3×10–12</span></label>
-    <label class="exline"><input type="checkbox" onchange="updateCount('d3')"><span class="exname">Rosca alternada</span><span class="exsets">3×12</span></label>
+    <label class="exline"><input type="checkbox" onchange="updateCount('d3')"><span class="exname">Puxada articulada (máquina)</span><span class="exsets">3×10–12</span><input type="number" class="weight-input" placeholder="kg" data-exercise="d3-ex1" onchange="saveWeight(this)"></label>
+    <label class="exline"><input type="checkbox" onchange="updateCount('d3')"><span class="exname">Remada baixa no cabo</span><span class="exsets">3×10–12</span><input type="number" class="weight-input" placeholder="kg" data-exercise="d3-ex2" onchange="saveWeight(this)"></label>
+    <label class="exline"><input type="checkbox" onchange="updateCount('d3')"><span class="exname">Remada unilateral com halter</span><span class="exsets">3×10–12</span><input type="number" class="weight-input" placeholder="kg" data-exercise="d3-ex3" onchange="saveWeight(this)"></label>
+    <label class="exline"><input type="checkbox" onchange="updateCount('d3')"><span class="exname">Rosca direta</span><span class="exsets">3×10–12</span><input type="number" class="weight-input" placeholder="kg" data-exercise="d3-ex4" onchange="saveWeight(this)"></label>
+    <label class="exline"><input type="checkbox" onchange="updateCount('d3')"><span class="exname">Rosca alternada</span><span class="exsets">3×12</span><input type="number" class="weight-input" placeholder="kg" data-exercise="d3-ex5" onchange="saveWeight(this)"></label>
 
     <div class="day-foot">Descanso entre séries: 60–90s</div>
   </div>
@@ -490,11 +539,11 @@ h1.title span{color:var(--oxide);}
       <div class="counter" data-counter="d5">0/5</div>
     </div>
 
-    <label class="exline"><input type="checkbox" onchange="updateCount('d5')"><span class="exname">Stiff com halteres ou barra</span><span class="exsets">3×10–12</span></label>
-    <label class="exline"><input type="checkbox" onchange="updateCount('d5')"><span class="exname">Mesa flexora</span><span class="exsets">3×12–15</span></label>
-    <label class="exline"><input type="checkbox" onchange="updateCount('d5')"><span class="exname">Cadeira abdutora</span><span class="exsets">3×15</span></label>
-    <label class="exline"><input type="checkbox" onchange="updateCount('d5')"><span class="exname">Elevação pélvica (hip thrust)</span><span class="exsets">3×12–15</span></label>
-    <label class="exline"><input type="checkbox" onchange="updateCount('d5')"><span class="exname">Panturrilha sentado</span><span class="exsets">3×15–20</span></label>
+    <label class="exline"><input type="checkbox" onchange="updateCount('d5')"><span class="exname">Stiff com halteres ou barra</span><span class="exsets">3×10–12</span><input type="number" class="weight-input" placeholder="kg" data-exercise="d5-ex1" onchange="saveWeight(this)"></label>
+    <label class="exline"><input type="checkbox" onchange="updateCount('d5')"><span class="exname">Mesa flexora</span><span class="exsets">3×12–15</span><input type="number" class="weight-input" placeholder="kg" data-exercise="d5-ex2" onchange="saveWeight(this)"></label>
+    <label class="exline"><input type="checkbox" onchange="updateCount('d5')"><span class="exname">Cadeira abdutora</span><span class="exsets">3×15</span><input type="number" class="weight-input" placeholder="kg" data-exercise="d5-ex3" onchange="saveWeight(this)"></label>
+    <label class="exline"><input type="checkbox" onchange="updateCount('d5')"><span class="exname">Elevação pélvica (hip thrust)</span><span class="exsets">3×12–15</span><input type="number" class="weight-input" placeholder="kg" data-exercise="d5-ex4" onchange="saveWeight(this)"></label>
+    <label class="exline"><input type="checkbox" onchange="updateCount('d5')"><span class="exname">Panturrilha sentado</span><span class="exsets">3×15–20</span><input type="number" class="weight-input" placeholder="kg" data-exercise="d5-ex5" onchange="saveWeight(this)"></label>
 
     <div class="day-foot">Descanso entre séries: 60–90s</div>
   </div>
@@ -510,12 +559,12 @@ h1.title span{color:var(--oxide);}
       <div class="counter" data-counter="d6">0/6</div>
     </div>
 
-    <label class="exline"><input type="checkbox" onchange="updateCount('d6')"><span class="exname">Desenvolvimento militar</span><span class="exsets">3×10–12</span></label>
-    <label class="exline"><input type="checkbox" onchange="updateCount('d6')"><span class="exname">Elevação lateral</span><span class="exsets">3×12–15</span></label>
-    <label class="exline"><input type="checkbox" onchange="updateCount('d6')"><span class="exname">Crucifixo invertido (deltoide posterior)</span><span class="exsets">3×12–15</span></label>
-    <label class="exline"><input type="checkbox" onchange="updateCount('d6')"><span class="exname">Crucifixo na máquina (peck deck)</span><span class="exsets">3×12</span></label>
-    <label class="exline"><input type="checkbox" onchange="updateCount('d6')"><span class="exname">Tríceps corda</span><span class="exsets">3×12</span></label>
-    <label class="exline"><input type="checkbox" onchange="updateCount('d6')"><span class="exname">Rosca scott</span><span class="exsets">3×12</span></label>
+    <label class="exline"><input type="checkbox" onchange="updateCount('d6')"><span class="exname">Desenvolvimento militar</span><span class="exsets">3×10–12</span><input type="number" class="weight-input" placeholder="kg" data-exercise="d6-ex1" onchange="saveWeight(this)"></label>
+    <label class="exline"><input type="checkbox" onchange="updateCount('d6')"><span class="exname">Elevação lateral</span><span class="exsets">3×12–15</span><input type="number" class="weight-input" placeholder="kg" data-exercise="d6-ex2" onchange="saveWeight(this)"></label>
+    <label class="exline"><input type="checkbox" onchange="updateCount('d6')"><span class="exname">Crucifixo invertido (deltoide posterior)</span><span class="exsets">3×12–15</span><input type="number" class="weight-input" placeholder="kg" data-exercise="d6-ex3" onchange="saveWeight(this)"></label>
+    <label class="exline"><input type="checkbox" onchange="updateCount('d6')"><span class="exname">Crucifixo na máquina (peck deck)</span><span class="exsets">3×12</span><input type="number" class="weight-input" placeholder="kg" data-exercise="d6-ex4" onchange="saveWeight(this)"></label>
+    <label class="exline"><input type="checkbox" onchange="updateCount('d6')"><span class="exname">Tríceps corda</span><span class="exsets">3×12</span><input type="number" class="weight-input" placeholder="kg" data-exercise="d6-ex5" onchange="saveWeight(this)"></label>
+    <label class="exline"><input type="checkbox" onchange="updateCount('d6')"><span class="exname">Rosca scott</span><span class="exsets">3×12</span><input type="number" class="weight-input" placeholder="kg" data-exercise="d6-ex6" onchange="saveWeight(this)"></label>
 
     <div class="day-foot">Descanso entre séries: 60–90s</div>
   </div>
@@ -538,6 +587,8 @@ h1.title span{color:var(--oxide);}
 
   <div class="foot-note">Marque os exercícios conforme for completando o treino do dia.</div>
 
+  <button class="clear-btn" onclick="clearAllWeights()">Limpar Cargas</button>
+
 </div>
 
 <script>
@@ -547,6 +598,41 @@ function updateCount(dayId){
   const checked = card.querySelectorAll('input[type="checkbox"]:checked').length;
   document.querySelector('[data-counter="' + dayId + '"]').textContent = checked + '/' + boxes.length;
 }
+
+function saveWeight(input) {
+  const exerciseId = input.getAttribute('data-exercise');
+  const weight = input.value;
+  if (weight) {
+    localStorage.setItem('weight_' + exerciseId, weight);
+  } else {
+    localStorage.removeItem('weight_' + exerciseId);
+  }
+}
+
+function loadWeights() {
+  const weightInputs = document.querySelectorAll('.weight-input');
+  weightInputs.forEach(input => {
+    const exerciseId = input.getAttribute('data-exercise');
+    const savedWeight = localStorage.getItem('weight_' + exerciseId);
+    if (savedWeight) {
+      input.value = savedWeight;
+    }
+  });
+}
+
+function clearAllWeights() {
+  if (confirm('Tem certeza que deseja limpar todas as cargas registradas?')) {
+    const weightInputs = document.querySelectorAll('.weight-input');
+    weightInputs.forEach(input => {
+      const exerciseId = input.getAttribute('data-exercise');
+      localStorage.removeItem('weight_' + exerciseId);
+      input.value = '';
+    });
+    alert('Todas as cargas foram limpas!');
+  }
+}
+
+window.addEventListener('DOMContentLoaded', loadWeights);
 </script>
 
 </body>
