@@ -221,10 +221,114 @@ h1.title span{color:var(--oxide);}
   padding:10px 0;
   border-top:1px solid var(--line);
   cursor:pointer;
+  flex-wrap:wrap;
 }
 .day-card .exline:first-of-type{border-top:none;}
 
-.exline input{
+.history-panel{
+  width:100%;
+  max-height:0;
+  overflow:hidden;
+  transition:max-height 0.3s ease;
+  margin-top:8px;
+}
+.history-panel.expanded{
+  max-height:400px;
+  overflow-y:auto;
+}
+.history-content{
+  background:var(--bg);
+  border:1px solid var(--line-strong);
+  border-radius:8px;
+  padding:16px;
+  margin-top:8px;
+}
+.history-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:12px;
+}
+.history-title{
+  font-family:'JetBrains Mono', monospace;
+  font-size:11px;
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+  color:var(--bone-dim);
+}
+.save-entry-btn{
+  background:var(--oxide);
+  color:var(--oxide-text);
+  border:none;
+  border-radius:6px;
+  padding:6px 12px;
+  font-family:'JetBrains Mono', monospace;
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:0.06em;
+  text-transform:uppercase;
+  cursor:pointer;
+  transition:all .2s;
+}
+.save-entry-btn:hover{
+  background:var(--brass);
+  color:var(--brass-text);
+}
+.history-list{
+  list-style:none;
+  margin:12px 0;
+  padding:0;
+  max-height:120px;
+  overflow-y:auto;
+}
+.history-item{
+  display:flex;
+  justify-content:space-between;
+  padding:6px 10px;
+  margin-bottom:4px;
+  background:var(--panel-2);
+  border-radius:6px;
+  font-size:12px;
+}
+.history-date{
+  color:var(--bone-dim);
+  font-family:'JetBrains Mono', monospace;
+  font-size:11px;
+}
+.history-weight{
+  color:var(--bone);
+  font-weight:600;
+  font-family:'JetBrains Mono', monospace;
+}
+.chart-container{
+  margin-top:12px;
+  padding:12px;
+  background:var(--panel-2);
+  border-radius:8px;
+  min-height:150px;
+}
+.chart-canvas{
+  width:100%;
+  height:140px;
+}
+.no-history{
+  text-align:center;
+  color:var(--bone-faint);
+  font-size:12px;
+  padding:20px;
+  font-style:italic;
+}
+.expand-icon{
+  margin-left:auto;
+  color:var(--bone-faint);
+  font-size:12px;
+  transition:transform 0.3s;
+}
+.exline.expanded .expand-icon{
+  transform:rotate(180deg);
+}
+
+.exline input[type="checkbox"]{
   appearance:none;
   width:18px; height:18px;
   border-radius:50%;
@@ -233,10 +337,10 @@ h1.title span{color:var(--oxide);}
   position:relative;
   cursor:pointer;
 }
-.day-card .exline input{accent-color:var(--oxide);}
-.day-card.brass-edge .exline input{accent-color:var(--brass);}
-.exline input:checked{background:var(--bone-faint); border-color:var(--bone-faint);}
-.exline input:checked::after{
+.day-card .exline input[type="checkbox"]{accent-color:var(--oxide);}
+.day-card.brass-edge .exline input[type="checkbox"]{accent-color:var(--brass);}
+.exline input[type="checkbox"]:checked{background:var(--bone-faint); border-color:var(--bone-faint);}
+.exline input[type="checkbox"]:checked::after{
   content:"";
   position:absolute; left:5px; top:1px;
   width:5px; height:9px;
@@ -251,7 +355,7 @@ h1.title span{color:var(--oxide);}
   font-weight:500;
   color:var(--bone);
 }
-.exline:has(input:checked) .exname{
+.exline:has(input[type="checkbox"]:checked) .exname{
   text-decoration:line-through;
   color:var(--bone-faint);
 }
@@ -261,6 +365,8 @@ h1.title span{color:var(--oxide);}
   color:var(--bone-dim);
   flex-shrink:0;
 }
+
+/* ---------- INPUT DE PESO ---------- */
 .weight-input{
   width:70px;
   padding:4px 8px;
@@ -283,6 +389,19 @@ h1.title span{color:var(--oxide);}
   color:var(--bone-faint);
   font-size:11px;
 }
+
+/* REMOVER AS SETAS (SPINNERS) DOS INPUTS DE NÚMERO */
+/* Para Chrome, Safari, Edge e Opera */
+.weight-input::-webkit-outer-spin-button,
+.weight-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+/* Para Firefox */
+.weight-input[type=number] {
+  -moz-appearance: textfield;
+}
+
 .clear-btn{
   position:fixed;
   bottom:20px;
@@ -404,6 +523,7 @@ h1.title span{color:var(--oxide);}
   body{background:#fff; color:#111;}
   .day-card{background:#fff; border-color:#ccc;}
   .eyebrow,.tl-tag.oxide,.tl-tag.brass{background:#eee; color:#111;}
+  .weight-input { border: 1px solid #ccc; color: #111; }
 }
 </style>
 </head>
@@ -462,7 +582,6 @@ h1.title span{color:var(--oxide);}
 
   <div class="log-label">Treinos da semana</div>
 
-  <!-- DIA 1 -->
   <div class="day-card">
     <div class="day-head">
       <div>
@@ -473,16 +592,105 @@ h1.title span{color:var(--oxide);}
       <div class="counter" data-counter="d1">0/5</div>
     </div>
 
-    <label class="exline"><input type="checkbox" onchange="updateCount('d1')"><span class="exname">Supino reto (barra ou máquina)</span><span class="exsets">3×10–12</span><input type="number" class="weight-input" placeholder="kg" data-exercise="d1-ex1" onchange="saveWeight(this)"></label>
-    <label class="exline"><input type="checkbox" onchange="updateCount('d1')"><span class="exname">Supino inclinado com halteres</span><span class="exsets">3×10–12</span><input type="number" class="weight-input" placeholder="kg" data-exercise="d1-ex2" onchange="saveWeight(this)"></label>
-    <label class="exline"><input type="checkbox" onchange="updateCount('d1')"><span class="exname">Desenvolvimento de ombros sentado</span><span class="exsets">3×10–12</span><input type="number" class="weight-input" placeholder="kg" data-exercise="d1-ex3" onchange="saveWeight(this)"></label>
-    <label class="exline"><input type="checkbox" onchange="updateCount('d1')"><span class="exname">Elevação lateral</span><span class="exsets">3×12–15</span><input type="number" class="weight-input" placeholder="kg" data-exercise="d1-ex4" onchange="saveWeight(this)"></label>
-    <label class="exline"><input type="checkbox" onchange="updateCount('d1')"><span class="exname">Tríceps na polia</span><span class="exsets">3×12–15</span><input type="number" class="weight-input" placeholder="kg" data-exercise="d1-ex5" onchange="saveWeight(this)"></label>
+    <div class="exline" onclick="toggleHistory(this, 'd1-ex1')">
+      <input type="checkbox" onchange="updateCount('d1')" onclick="event.stopPropagation()">
+      <span class="exname">Supino reto (barra ou máquina)</span>
+      <span class="exsets">3×10–12</span>
+      <input type="number" class="weight-input" placeholder="kg" data-exercise="d1-ex1" onchange="saveWeight(this)" onclick="event.stopPropagation()">
+      <span class="expand-icon">▼</span>
+      <div class="history-panel">
+        <div class="history-content">
+          <div class="history-header">
+            <span class="history-title">Histórico de Cargas</span>
+            <button class="save-entry-btn" onclick="saveHistoryEntry(event, 'd1-ex1', 'Supino reto')">Salvar Registro</button>
+          </div>
+          <div id="history-d1-ex1"></div>
+          <div class="chart-container">
+            <canvas id="chart-d1-ex1" class="chart-canvas"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="exline" onclick="toggleHistory(this, 'd1-ex2')">
+      <input type="checkbox" onchange="updateCount('d1')" onclick="event.stopPropagation()">
+      <span class="exname">Supino inclinado com halteres</span>
+      <span class="exsets">3×10–12</span>
+      <input type="number" class="weight-input" placeholder="kg" data-exercise="d1-ex2" onchange="saveWeight(this)" onclick="event.stopPropagation()">
+      <span class="expand-icon">▼</span>
+      <div class="history-panel">
+        <div class="history-content">
+          <div class="history-header">
+            <span class="history-title">Histórico de Cargas</span>
+            <button class="save-entry-btn" onclick="saveHistoryEntry(event, 'd1-ex2', 'Supino inclinado')">Salvar Registro</button>
+          </div>
+          <div id="history-d1-ex2"></div>
+          <div class="chart-container">
+            <canvas id="chart-d1-ex2" class="chart-canvas"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="exline" onclick="toggleHistory(this, 'd1-ex3')">
+      <input type="checkbox" onchange="updateCount('d1')" onclick="event.stopPropagation()">
+      <span class="exname">Desenvolvimento de ombros sentado</span>
+      <span class="exsets">3×10–12</span>
+      <input type="number" class="weight-input" placeholder="kg" data-exercise="d1-ex3" onchange="saveWeight(this)" onclick="event.stopPropagation()">
+      <span class="expand-icon">▼</span>
+      <div class="history-panel">
+        <div class="history-content">
+          <div class="history-header">
+            <span class="history-title">Histórico de Cargas</span>
+            <button class="save-entry-btn" onclick="saveHistoryEntry(event, 'd1-ex3', 'Desenvolvimento ombros')">Salvar Registro</button>
+          </div>
+          <div id="history-d1-ex3"></div>
+          <div class="chart-container">
+            <canvas id="chart-d1-ex3" class="chart-canvas"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="exline" onclick="toggleHistory(this, 'd1-ex4')">
+      <input type="checkbox" onchange="updateCount('d1')" onclick="event.stopPropagation()">
+      <span class="exname">Elevação lateral</span>
+      <span class="exsets">3×12–15</span>
+      <input type="number" class="weight-input" placeholder="kg" data-exercise="d1-ex4" onchange="saveWeight(this)" onclick="event.stopPropagation()">
+      <span class="expand-icon">▼</span>
+      <div class="history-panel">
+        <div class="history-content">
+          <div class="history-header">
+            <span class="history-title">Histórico de Cargas</span>
+            <button class="save-entry-btn" onclick="saveHistoryEntry(event, 'd1-ex4', 'Elevação lateral')">Salvar Registro</button>
+          </div>
+          <div id="history-d1-ex4"></div>
+          <div class="chart-container">
+            <canvas id="chart-d1-ex4" class="chart-canvas"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="exline" onclick="toggleHistory(this, 'd1-ex5')">
+      <input type="checkbox" onchange="updateCount('d1')" onclick="event.stopPropagation()">
+      <span class="exname">Tríceps na polia</span>
+      <span class="exsets">3×12–15</span>
+      <input type="number" class="weight-input" placeholder="kg" data-exercise="d1-ex5" onchange="saveWeight(this)" onclick="event.stopPropagation()">
+      <span class="expand-icon">▼</span>
+      <div class="history-panel">
+        <div class="history-content">
+          <div class="history-header">
+            <span class="history-title">Histórico de Cargas</span>
+            <button class="save-entry-btn" onclick="saveHistoryEntry(event, 'd1-ex5', 'Tríceps polia')">Salvar Registro</button>
+          </div>
+          <div id="history-d1-ex5"></div>
+          <div class="chart-container">
+            <canvas id="chart-d1-ex5" class="chart-canvas"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <div class="day-foot">Descanso entre séries: 60–90s</div>
   </div>
 
-  <!-- DIA 2 -->
   <div class="day-card brass-edge">
     <div class="day-head">
       <div>
@@ -493,16 +701,105 @@ h1.title span{color:var(--oxide);}
       <div class="counter" data-counter="d2">0/5</div>
     </div>
 
-    <label class="exline"><input type="checkbox" onchange="updateCount('d2')"><span class="exname">Leg press 45°</span><span class="exsets">4×10–12</span><input type="number" class="weight-input" placeholder="kg" data-exercise="d2-ex1" onchange="saveWeight(this)"></label>
-    <label class="exline"><input type="checkbox" onchange="updateCount('d2')"><span class="exname">Agachamento na máquina (Smith ou livre)</span><span class="exsets">3×10–12</span><input type="number" class="weight-input" placeholder="kg" data-exercise="d2-ex2" onchange="saveWeight(this)"></label>
-    <label class="exline"><input type="checkbox" onchange="updateCount('d2')"><span class="exname">Cadeira extensora</span><span class="exsets">3×12–15</span><input type="number" class="weight-input" placeholder="kg" data-exercise="d2-ex3" onchange="saveWeight(this)"></label>
-    <label class="exline"><input type="checkbox" onchange="updateCount('d2')"><span class="exname">Cadeira adutora</span><span class="exsets">3×15</span><input type="number" class="weight-input" placeholder="kg" data-exercise="d2-ex4" onchange="saveWeight(this)"></label>
-    <label class="exline"><input type="checkbox" onchange="updateCount('d2')"><span class="exname">Panturrilha em pé</span><span class="exsets">3×15–20</span><input type="number" class="weight-input" placeholder="kg" data-exercise="d2-ex5" onchange="saveWeight(this)"></label>
+    <div class="exline" onclick="toggleHistory(this, 'd2-ex1')">
+      <input type="checkbox" onchange="updateCount('d2')" onclick="event.stopPropagation()">
+      <span class="exname">Leg press 45°</span>
+      <span class="exsets">4×10–12</span>
+      <input type="number" class="weight-input" placeholder="kg" data-exercise="d2-ex1" onchange="saveWeight(this)" onclick="event.stopPropagation()">
+      <span class="expand-icon">▼</span>
+      <div class="history-panel">
+        <div class="history-content">
+          <div class="history-header">
+            <span class="history-title">Histórico de Cargas</span>
+            <button class="save-entry-btn" onclick="saveHistoryEntry(event, 'd2-ex1', 'Leg press 45°')">Salvar Registro</button>
+          </div>
+          <div id="history-d2-ex1"></div>
+          <div class="chart-container">
+            <canvas id="chart-d2-ex1" class="chart-canvas"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="exline" onclick="toggleHistory(this, 'd2-ex2')">
+      <input type="checkbox" onchange="updateCount('d2')" onclick="event.stopPropagation()">
+      <span class="exname">Agachamento na máquina (Smith ou livre)</span>
+      <span class="exsets">3×10–12</span>
+      <input type="number" class="weight-input" placeholder="kg" data-exercise="d2-ex2" onchange="saveWeight(this)" onclick="event.stopPropagation()">
+      <span class="expand-icon">▼</span>
+      <div class="history-panel">
+        <div class="history-content">
+          <div class="history-header">
+            <span class="history-title">Histórico de Cargas</span>
+            <button class="save-entry-btn" onclick="saveHistoryEntry(event, 'd2-ex2', 'Agachamento')">Salvar Registro</button>
+          </div>
+          <div id="history-d2-ex2"></div>
+          <div class="chart-container">
+            <canvas id="chart-d2-ex2" class="chart-canvas"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="exline" onclick="toggleHistory(this, 'd2-ex3')">
+      <input type="checkbox" onchange="updateCount('d2')" onclick="event.stopPropagation()">
+      <span class="exname">Cadeira extensora</span>
+      <span class="exsets">3×12–15</span>
+      <input type="number" class="weight-input" placeholder="kg" data-exercise="d2-ex3" onchange="saveWeight(this)" onclick="event.stopPropagation()">
+      <span class="expand-icon">▼</span>
+      <div class="history-panel">
+        <div class="history-content">
+          <div class="history-header">
+            <span class="history-title">Histórico de Cargas</span>
+            <button class="save-entry-btn" onclick="saveHistoryEntry(event, 'd2-ex3', 'Cadeira extensora')">Salvar Registro</button>
+          </div>
+          <div id="history-d2-ex3"></div>
+          <div class="chart-container">
+            <canvas id="chart-d2-ex3" class="chart-canvas"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="exline" onclick="toggleHistory(this, 'd2-ex4')">
+      <input type="checkbox" onchange="updateCount('d2')" onclick="event.stopPropagation()">
+      <span class="exname">Cadeira adutora</span>
+      <span class="exsets">3×15</span>
+      <input type="number" class="weight-input" placeholder="kg" data-exercise="d2-ex4" onchange="saveWeight(this)" onclick="event.stopPropagation()">
+      <span class="expand-icon">▼</span>
+      <div class="history-panel">
+        <div class="history-content">
+          <div class="history-header">
+            <span class="history-title">Histórico de Cargas</span>
+            <button class="save-entry-btn" onclick="saveHistoryEntry(event, 'd2-ex4', 'Cadeira adutora')">Salvar Registro</button>
+          </div>
+          <div id="history-d2-ex4"></div>
+          <div class="chart-container">
+            <canvas id="chart-d2-ex4" class="chart-canvas"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="exline" onclick="toggleHistory(this, 'd2-ex5')">
+      <input type="checkbox" onchange="updateCount('d2')" onclick="event.stopPropagation()">
+      <span class="exname">Panturrilha em pé</span>
+      <span class="exsets">3×15–20</span>
+      <input type="number" class="weight-input" placeholder="kg" data-exercise="d2-ex5" onchange="saveWeight(this)" onclick="event.stopPropagation()">
+      <span class="expand-icon">▼</span>
+      <div class="history-panel">
+        <div class="history-content">
+          <div class="history-header">
+            <span class="history-title">Histórico de Cargas</span>
+            <button class="save-entry-btn" onclick="saveHistoryEntry(event, 'd2-ex5', 'Panturrilha em pé')">Salvar Registro</button>
+          </div>
+          <div id="history-d2-ex5"></div>
+          <div class="chart-container">
+            <canvas id="chart-d2-ex5" class="chart-canvas"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <div class="day-foot">Descanso entre séries: 60–90s</div>
   </div>
 
-  <!-- DIA 3 -->
   <div class="day-card">
     <div class="day-head">
       <div>
@@ -513,11 +810,101 @@ h1.title span{color:var(--oxide);}
       <div class="counter" data-counter="d3">0/5</div>
     </div>
 
-    <label class="exline"><input type="checkbox" onchange="updateCount('d3')"><span class="exname">Puxada articulada (máquina)</span><span class="exsets">3×10–12</span><input type="number" class="weight-input" placeholder="kg" data-exercise="d3-ex1" onchange="saveWeight(this)"></label>
-    <label class="exline"><input type="checkbox" onchange="updateCount('d3')"><span class="exname">Remada baixa no cabo</span><span class="exsets">3×10–12</span><input type="number" class="weight-input" placeholder="kg" data-exercise="d3-ex2" onchange="saveWeight(this)"></label>
-    <label class="exline"><input type="checkbox" onchange="updateCount('d3')"><span class="exname">Remada unilateral com halter</span><span class="exsets">3×10–12</span><input type="number" class="weight-input" placeholder="kg" data-exercise="d3-ex3" onchange="saveWeight(this)"></label>
-    <label class="exline"><input type="checkbox" onchange="updateCount('d3')"><span class="exname">Rosca direta</span><span class="exsets">3×10–12</span><input type="number" class="weight-input" placeholder="kg" data-exercise="d3-ex4" onchange="saveWeight(this)"></label>
-    <label class="exline"><input type="checkbox" onchange="updateCount('d3')"><span class="exname">Rosca alternada</span><span class="exsets">3×12</span><input type="number" class="weight-input" placeholder="kg" data-exercise="d3-ex5" onchange="saveWeight(this)"></label>
+    <div class="exline" onclick="toggleHistory(this, 'd3-ex1')">
+      <input type="checkbox" onchange="updateCount('d3')" onclick="event.stopPropagation()">
+      <span class="exname">Puxada articulada (máquina)</span>
+      <span class="exsets">3×10–12</span>
+      <input type="number" class="weight-input" placeholder="kg" data-exercise="d3-ex1" onchange="saveWeight(this)" onclick="event.stopPropagation()">
+      <span class="expand-icon">▼</span>
+      <div class="history-panel">
+        <div class="history-content">
+          <div class="history-header">
+            <span class="history-title">Histórico de Cargas</span>
+            <button class="save-entry-btn" onclick="saveHistoryEntry(event, 'd3-ex1', 'Puxada articulada')">Salvar Registro</button>
+          </div>
+          <div id="history-d3-ex1"></div>
+          <div class="chart-container">
+            <canvas id="chart-d3-ex1" class="chart-canvas"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="exline" onclick="toggleHistory(this, 'd3-ex2')">
+      <input type="checkbox" onchange="updateCount('d3')" onclick="event.stopPropagation()">
+      <span class="exname">Remada baixa no cabo</span>
+      <span class="exsets">3×10–12</span>
+      <input type="number" class="weight-input" placeholder="kg" data-exercise="d3-ex2" onchange="saveWeight(this)" onclick="event.stopPropagation()">
+      <span class="expand-icon">▼</span>
+      <div class="history-panel">
+        <div class="history-content">
+          <div class="history-header">
+            <span class="history-title">Histórico de Cargas</span>
+            <button class="save-entry-btn" onclick="saveHistoryEntry(event, 'd3-ex2', 'Remada baixa')">Salvar Registro</button>
+          </div>
+          <div id="history-d3-ex2"></div>
+          <div class="chart-container">
+            <canvas id="chart-d3-ex2" class="chart-canvas"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="exline" onclick="toggleHistory(this, 'd3-ex3')">
+      <input type="checkbox" onchange="updateCount('d3')" onclick="event.stopPropagation()">
+      <span class="exname">Remada unilateral com halter</span>
+      <span class="exsets">3×10–12</span>
+      <input type="number" class="weight-input" placeholder="kg" data-exercise="d3-ex3" onchange="saveWeight(this)" onclick="event.stopPropagation()">
+      <span class="expand-icon">▼</span>
+      <div class="history-panel">
+        <div class="history-content">
+          <div class="history-header">
+            <span class="history-title">Histórico de Cargas</span>
+            <button class="save-entry-btn" onclick="saveHistoryEntry(event, 'd3-ex3', 'Remada unilateral')">Salvar Registro</button>
+          </div>
+          <div id="history-d3-ex3"></div>
+          <div class="chart-container">
+            <canvas id="chart-d3-ex3" class="chart-canvas"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="exline" onclick="toggleHistory(this, 'd3-ex4')">
+      <input type="checkbox" onchange="updateCount('d3')" onclick="event.stopPropagation()">
+      <span class="exname">Rosca direta</span>
+      <span class="exsets">3×10–12</span>
+      <input type="number" class="weight-input" placeholder="kg" data-exercise="d3-ex4" onchange="saveWeight(this)" onclick="event.stopPropagation()">
+      <span class="expand-icon">▼</span>
+      <div class="history-panel">
+        <div class="history-content">
+          <div class="history-header">
+            <span class="history-title">Histórico de Cargas</span>
+            <button class="save-entry-btn" onclick="saveHistoryEntry(event, 'd3-ex4', 'Rosca direta')">Salvar Registro</button>
+          </div>
+          <div id="history-d3-ex4"></div>
+          <div class="chart-container">
+            <canvas id="chart-d3-ex4" class="chart-canvas"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="exline" onclick="toggleHistory(this, 'd3-ex5')">
+      <input type="checkbox" onchange="updateCount('d3')" onclick="event.stopPropagation()">
+      <span class="exname">Rosca alternada</span>
+      <span class="exsets">3×12</span>
+      <input type="number" class="weight-input" placeholder="kg" data-exercise="d3-ex5" onchange="saveWeight(this)" onclick="event.stopPropagation()">
+      <span class="expand-icon">▼</span>
+      <div class="history-panel">
+        <div class="history-content">
+          <div class="history-header">
+            <span class="history-title">Histórico de Cargas</span>
+            <button class="save-entry-btn" onclick="saveHistoryEntry(event, 'd3-ex5', 'Rosca alternada')">Salvar Registro</button>
+          </div>
+          <div id="history-d3-ex5"></div>
+          <div class="chart-container">
+            <canvas id="chart-d3-ex5" class="chart-canvas"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <div class="day-foot">Descanso entre séries: 60–90s</div>
   </div>
@@ -528,7 +915,6 @@ h1.title span{color:var(--oxide);}
     <div class="rl"></div>
   </div>
 
-  <!-- DIA 5 -->
   <div class="day-card brass-edge">
     <div class="day-head">
       <div>
@@ -539,16 +925,105 @@ h1.title span{color:var(--oxide);}
       <div class="counter" data-counter="d5">0/5</div>
     </div>
 
-    <label class="exline"><input type="checkbox" onchange="updateCount('d5')"><span class="exname">Stiff com halteres ou barra</span><span class="exsets">3×10–12</span><input type="number" class="weight-input" placeholder="kg" data-exercise="d5-ex1" onchange="saveWeight(this)"></label>
-    <label class="exline"><input type="checkbox" onchange="updateCount('d5')"><span class="exname">Mesa flexora</span><span class="exsets">3×12–15</span><input type="number" class="weight-input" placeholder="kg" data-exercise="d5-ex2" onchange="saveWeight(this)"></label>
-    <label class="exline"><input type="checkbox" onchange="updateCount('d5')"><span class="exname">Cadeira abdutora</span><span class="exsets">3×15</span><input type="number" class="weight-input" placeholder="kg" data-exercise="d5-ex3" onchange="saveWeight(this)"></label>
-    <label class="exline"><input type="checkbox" onchange="updateCount('d5')"><span class="exname">Elevação pélvica (hip thrust)</span><span class="exsets">3×12–15</span><input type="number" class="weight-input" placeholder="kg" data-exercise="d5-ex4" onchange="saveWeight(this)"></label>
-    <label class="exline"><input type="checkbox" onchange="updateCount('d5')"><span class="exname">Panturrilha sentado</span><span class="exsets">3×15–20</span><input type="number" class="weight-input" placeholder="kg" data-exercise="d5-ex5" onchange="saveWeight(this)"></label>
+    <div class="exline" onclick="toggleHistory(this, 'd5-ex1')">
+      <input type="checkbox" onchange="updateCount('d5')" onclick="event.stopPropagation()">
+      <span class="exname">Stiff com halteres ou barra</span>
+      <span class="exsets">3×10–12</span>
+      <input type="number" class="weight-input" placeholder="kg" data-exercise="d5-ex1" onchange="saveWeight(this)" onclick="event.stopPropagation()">
+      <span class="expand-icon">▼</span>
+      <div class="history-panel">
+        <div class="history-content">
+          <div class="history-header">
+            <span class="history-title">Histórico de Cargas</span>
+            <button class="save-entry-btn" onclick="saveHistoryEntry(event, 'd5-ex1', 'Stiff')">Salvar Registro</button>
+          </div>
+          <div id="history-d5-ex1"></div>
+          <div class="chart-container">
+            <canvas id="chart-d5-ex1" class="chart-canvas"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="exline" onclick="toggleHistory(this, 'd5-ex2')">
+      <input type="checkbox" onchange="updateCount('d5')" onclick="event.stopPropagation()">
+      <span class="exname">Mesa flexora</span>
+      <span class="exsets">3×12–15</span>
+      <input type="number" class="weight-input" placeholder="kg" data-exercise="d5-ex2" onchange="saveWeight(this)" onclick="event.stopPropagation()">
+      <span class="expand-icon">▼</span>
+      <div class="history-panel">
+        <div class="history-content">
+          <div class="history-header">
+            <span class="history-title">Histórico de Cargas</span>
+            <button class="save-entry-btn" onclick="saveHistoryEntry(event, 'd5-ex2', 'Mesa flexora')">Salvar Registro</button>
+          </div>
+          <div id="history-d5-ex2"></div>
+          <div class="chart-container">
+            <canvas id="chart-d5-ex2" class="chart-canvas"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="exline" onclick="toggleHistory(this, 'd5-ex3')">
+      <input type="checkbox" onchange="updateCount('d5')" onclick="event.stopPropagation()">
+      <span class="exname">Cadeira abdutora</span>
+      <span class="exsets">3×15</span>
+      <input type="number" class="weight-input" placeholder="kg" data-exercise="d5-ex3" onchange="saveWeight(this)" onclick="event.stopPropagation()">
+      <span class="expand-icon">▼</span>
+      <div class="history-panel">
+        <div class="history-content">
+          <div class="history-header">
+            <span class="history-title">Histórico de Cargas</span>
+            <button class="save-entry-btn" onclick="saveHistoryEntry(event, 'd5-ex3', 'Cadeira abdutora')">Salvar Registro</button>
+          </div>
+          <div id="history-d5-ex3"></div>
+          <div class="chart-container">
+            <canvas id="chart-d5-ex3" class="chart-canvas"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="exline" onclick="toggleHistory(this, 'd5-ex4')">
+      <input type="checkbox" onchange="updateCount('d5')" onclick="event.stopPropagation()">
+      <span class="exname">Elevação pélvica (hip thrust)</span>
+      <span class="exsets">3×12–15</span>
+      <input type="number" class="weight-input" placeholder="kg" data-exercise="d5-ex4" onchange="saveWeight(this)" onclick="event.stopPropagation()">
+      <span class="expand-icon">▼</span>
+      <div class="history-panel">
+        <div class="history-content">
+          <div class="history-header">
+            <span class="history-title">Histórico de Cargas</span>
+            <button class="save-entry-btn" onclick="saveHistoryEntry(event, 'd5-ex4', 'Hip thrust')">Salvar Registro</button>
+          </div>
+          <div id="history-d5-ex4"></div>
+          <div class="chart-container">
+            <canvas id="chart-d5-ex4" class="chart-canvas"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="exline" onclick="toggleHistory(this, 'd5-ex5')">
+      <input type="checkbox" onchange="updateCount('d5')" onclick="event.stopPropagation()">
+      <span class="exname">Panturrilha sentado</span>
+      <span class="exsets">3×15–20</span>
+      <input type="number" class="weight-input" placeholder="kg" data-exercise="d5-ex5" onchange="saveWeight(this)" onclick="event.stopPropagation()">
+      <span class="expand-icon">▼</span>
+      <div class="history-panel">
+        <div class="history-content">
+          <div class="history-header">
+            <span class="history-title">Histórico de Cargas</span>
+            <button class="save-entry-btn" onclick="saveHistoryEntry(event, 'd5-ex5', 'Panturrilha sentado')">Salvar Registro</button>
+          </div>
+          <div id="history-d5-ex5"></div>
+          <div class="chart-container">
+            <canvas id="chart-d5-ex5" class="chart-canvas"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <div class="day-foot">Descanso entre séries: 60–90s</div>
   </div>
 
-  <!-- DIA 6 -->
   <div class="day-card">
     <div class="day-head">
       <div>
@@ -559,12 +1034,120 @@ h1.title span{color:var(--oxide);}
       <div class="counter" data-counter="d6">0/6</div>
     </div>
 
-    <label class="exline"><input type="checkbox" onchange="updateCount('d6')"><span class="exname">Desenvolvimento militar</span><span class="exsets">3×10–12</span><input type="number" class="weight-input" placeholder="kg" data-exercise="d6-ex1" onchange="saveWeight(this)"></label>
-    <label class="exline"><input type="checkbox" onchange="updateCount('d6')"><span class="exname">Elevação lateral</span><span class="exsets">3×12–15</span><input type="number" class="weight-input" placeholder="kg" data-exercise="d6-ex2" onchange="saveWeight(this)"></label>
-    <label class="exline"><input type="checkbox" onchange="updateCount('d6')"><span class="exname">Crucifixo invertido (deltoide posterior)</span><span class="exsets">3×12–15</span><input type="number" class="weight-input" placeholder="kg" data-exercise="d6-ex3" onchange="saveWeight(this)"></label>
-    <label class="exline"><input type="checkbox" onchange="updateCount('d6')"><span class="exname">Crucifixo na máquina (peck deck)</span><span class="exsets">3×12</span><input type="number" class="weight-input" placeholder="kg" data-exercise="d6-ex4" onchange="saveWeight(this)"></label>
-    <label class="exline"><input type="checkbox" onchange="updateCount('d6')"><span class="exname">Tríceps corda</span><span class="exsets">3×12</span><input type="number" class="weight-input" placeholder="kg" data-exercise="d6-ex5" onchange="saveWeight(this)"></label>
-    <label class="exline"><input type="checkbox" onchange="updateCount('d6')"><span class="exname">Rosca scott</span><span class="exsets">3×12</span><input type="number" class="weight-input" placeholder="kg" data-exercise="d6-ex6" onchange="saveWeight(this)"></label>
+    <div class="exline" onclick="toggleHistory(this, 'd6-ex1')">
+      <input type="checkbox" onchange="updateCount('d6')" onclick="event.stopPropagation()">
+      <span class="exname">Desenvolvimento militar</span>
+      <span class="exsets">3×10–12</span>
+      <input type="number" class="weight-input" placeholder="kg" data-exercise="d6-ex1" onchange="saveWeight(this)" onclick="event.stopPropagation()">
+      <span class="expand-icon">▼</span>
+      <div class="history-panel">
+        <div class="history-content">
+          <div class="history-header">
+            <span class="history-title">Histórico de Cargas</span>
+            <button class="save-entry-btn" onclick="saveHistoryEntry(event, 'd6-ex1', 'Desenvolvimento militar')">Salvar Registro</button>
+          </div>
+          <div id="history-d6-ex1"></div>
+          <div class="chart-container">
+            <canvas id="chart-d6-ex1" class="chart-canvas"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="exline" onclick="toggleHistory(this, 'd6-ex2')">
+      <input type="checkbox" onchange="updateCount('d6')" onclick="event.stopPropagation()">
+      <span class="exname">Elevação lateral</span>
+      <span class="exsets">3×12–15</span>
+      <input type="number" class="weight-input" placeholder="kg" data-exercise="d6-ex2" onchange="saveWeight(this)" onclick="event.stopPropagation()">
+      <span class="expand-icon">▼</span>
+      <div class="history-panel">
+        <div class="history-content">
+          <div class="history-header">
+            <span class="history-title">Histórico de Cargas</span>
+            <button class="save-entry-btn" onclick="saveHistoryEntry(event, 'd6-ex2', 'Elevação lateral')">Salvar Registro</button>
+          </div>
+          <div id="history-d6-ex2"></div>
+          <div class="chart-container">
+            <canvas id="chart-d6-ex2" class="chart-canvas"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="exline" onclick="toggleHistory(this, 'd6-ex3')">
+      <input type="checkbox" onchange="updateCount('d6')" onclick="event.stopPropagation()">
+      <span class="exname">Crucifixo invertido (deltoide posterior)</span>
+      <span class="exsets">3×12–15</span>
+      <input type="number" class="weight-input" placeholder="kg" data-exercise="d6-ex3" onchange="saveWeight(this)" onclick="event.stopPropagation()">
+      <span class="expand-icon">▼</span>
+      <div class="history-panel">
+        <div class="history-content">
+          <div class="history-header">
+            <span class="history-title">Histórico de Cargas</span>
+            <button class="save-entry-btn" onclick="saveHistoryEntry(event, 'd6-ex3', 'Crucifixo invertido')">Salvar Registro</button>
+          </div>
+          <div id="history-d6-ex3"></div>
+          <div class="chart-container">
+            <canvas id="chart-d6-ex3" class="chart-canvas"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="exline" onclick="toggleHistory(this, 'd6-ex4')">
+      <input type="checkbox" onchange="updateCount('d6')" onclick="event.stopPropagation()">
+      <span class="exname">Crucifixo na máquina (peck deck)</span>
+      <span class="exsets">3×12</span>
+      <input type="number" class="weight-input" placeholder="kg" data-exercise="d6-ex4" onchange="saveWeight(this)" onclick="event.stopPropagation()">
+      <span class="expand-icon">▼</span>
+      <div class="history-panel">
+        <div class="history-content">
+          <div class="history-header">
+            <span class="history-title">Histórico de Cargas</span>
+            <button class="save-entry-btn" onclick="saveHistoryEntry(event, 'd6-ex4', 'Peck deck')">Salvar Registro</button>
+          </div>
+          <div id="history-d6-ex4"></div>
+          <div class="chart-container">
+            <canvas id="chart-d6-ex4" class="chart-canvas"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="exline" onclick="toggleHistory(this, 'd6-ex5')">
+      <input type="checkbox" onchange="updateCount('d6')" onclick="event.stopPropagation()">
+      <span class="exname">Tríceps corda</span>
+      <span class="exsets">3×12</span>
+      <input type="number" class="weight-input" placeholder="kg" data-exercise="d6-ex5" onchange="saveWeight(this)" onclick="event.stopPropagation()">
+      <span class="expand-icon">▼</span>
+      <div class="history-panel">
+        <div class="history-content">
+          <div class="history-header">
+            <span class="history-title">Histórico de Cargas</span>
+            <button class="save-entry-btn" onclick="saveHistoryEntry(event, 'd6-ex5', 'Tríceps corda')">Salvar Registro</button>
+          </div>
+          <div id="history-d6-ex5"></div>
+          <div class="chart-container">
+            <canvas id="chart-d6-ex5" class="chart-canvas"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="exline" onclick="toggleHistory(this, 'd6-ex6')">
+      <input type="checkbox" onchange="updateCount('d6')" onclick="event.stopPropagation()">
+      <span class="exname">Rosca scott</span>
+      <span class="exsets">3×12</span>
+      <input type="number" class="weight-input" placeholder="kg" data-exercise="d6-ex6" onchange="saveWeight(this)" onclick="event.stopPropagation()">
+      <span class="expand-icon">▼</span>
+      <div class="history-panel">
+        <div class="history-content">
+          <div class="history-header">
+            <span class="history-title">Histórico de Cargas</span>
+            <button class="save-entry-btn" onclick="saveHistoryEntry(event, 'd6-ex6', 'Rosca scott')">Salvar Registro</button>
+          </div>
+          <div id="history-d6-ex6"></div>
+          <div class="chart-container">
+            <canvas id="chart-d6-ex6" class="chart-canvas"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <div class="day-foot">Descanso entre séries: 60–90s</div>
   </div>
@@ -630,6 +1213,186 @@ function clearAllWeights() {
     });
     alert('Todas as cargas foram limpas!');
   }
+}
+
+function getHistory(exerciseId) {
+  const historyKey = 'history_' + exerciseId;
+  const history = localStorage.getItem(historyKey);
+  return history ? JSON.parse(history) : [];
+}
+
+function saveHistoryEntry(event, exerciseId, exerciseName) {
+  event.stopPropagation();
+  
+  const weightInput = document.querySelector('[data-exercise="' + exerciseId + '"]');
+  const weight = parseFloat(weightInput.value);
+  
+  if (!weight || weight <= 0) {
+    alert('Por favor, insira uma carga válida antes de salvar!');
+    return;
+  }
+  
+  const history = getHistory(exerciseId);
+  const today = new Date().toISOString().split('T')[0];
+  
+  const existingIndex = history.findIndex(entry => entry.date === today);
+  if (existingIndex >= 0) {
+    if (confirm('Já existe um registro para hoje. Deseja atualizar?')) {
+      history[existingIndex].weight = weight;
+    } else {
+      return;
+    }
+  } else {
+    history.push({
+      date: today,
+      weight: weight,
+      name: exerciseName
+    });
+  }
+  
+  history.sort((a, b) => new Date(a.date) - new Date(b.date));
+  
+  localStorage.setItem('history_' + exerciseId, JSON.stringify(history));
+  
+  renderHistory(exerciseId);
+  drawChart(exerciseId);
+  
+  alert('Registro salvo com sucesso!');
+}
+
+function toggleHistory(element, exerciseId) {
+  const panel = element.querySelector('.history-panel');
+  const isExpanded = element.classList.contains('expanded');
+  
+  document.querySelectorAll('.exline').forEach(ex => {
+    ex.classList.remove('expanded');
+    const p = ex.querySelector('.history-panel');
+    if (p) p.classList.remove('expanded');
+  });
+  
+  if (!isExpanded) {
+    element.classList.add('expanded');
+    panel.classList.add('expanded');
+    renderHistory(exerciseId);
+    drawChart(exerciseId);
+  }
+}
+
+function renderHistory(exerciseId) {
+  const history = getHistory(exerciseId);
+  const container = document.getElementById('history-' + exerciseId);
+  
+  if (history.length === 0) {
+    container.innerHTML = '<div class="no-history">Nenhum registro ainda. Digite uma carga e clique em "Salvar Registro".</div>';
+    return;
+  }
+  
+  const recentHistory = history.slice(-10).reverse();
+  
+  let html = '<ul class="history-list">';
+  recentHistory.forEach(entry => {
+    const date = new Date(entry.date + 'T00:00:00');
+    const formattedDate = date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    html += '<li class="history-item">';
+    html += '<span class="history-date">' + formattedDate + '</span>';
+    html += '<span class="history-weight">' + entry.weight + ' kg</span>';
+    html += '</li>';
+  });
+  html += '</ul>';
+  
+  container.innerHTML = html;
+}
+
+function drawChart(exerciseId) {
+  const history = getHistory(exerciseId);
+  const canvas = document.getElementById('chart-' + exerciseId);
+  
+  if (!canvas) return;
+  
+  const ctx = canvas.getContext('2d');
+  const width = canvas.width = canvas.offsetWidth;
+  const height = canvas.height = 140;
+  
+  ctx.clearRect(0, 0, width, height);
+  
+  if (history.length === 0) {
+    ctx.fillStyle = '#7D766B';
+    ctx.font = '12px "JetBrains Mono", monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText('Sem dados para exibir', width / 2, height / 2);
+    return;
+  }
+  
+  const recentHistory = history.slice(-10);
+  const weights = recentHistory.map(e => e.weight);
+  const maxWeight = Math.max(...weights);
+  const minWeight = Math.min(...weights);
+  const range = maxWeight - minWeight || 10;
+  
+  const padding = 40;
+  const chartWidth = width - padding * 2;
+  const chartHeight = height - padding * 2;
+  
+  const stepX = chartWidth / (recentHistory.length - 1 || 1);
+  
+  ctx.strokeStyle = '#2a2a30';
+  ctx.lineWidth = 1;
+  for (let i = 0; i <= 4; i++) {
+    const y = padding + (chartHeight / 4) * i;
+    ctx.beginPath();
+    ctx.moveTo(padding, y);
+    ctx.lineTo(width - padding, y);
+    ctx.stroke();
+  }
+  
+  ctx.strokeStyle = '#C4502E';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  
+  recentHistory.forEach((entry, index) => {
+    const x = padding + stepX * index;
+    const normalizedWeight = (entry.weight - minWeight) / range;
+    const y = padding + chartHeight - (normalizedWeight * chartHeight);
+    
+    if (index === 0) {
+      ctx.moveTo(x, y);
+    } else {
+      ctx.lineTo(x, y);
+    }
+  });
+  
+  ctx.stroke();
+  
+  ctx.fillStyle = '#C4502E';
+  recentHistory.forEach((entry, index) => {
+    const x = padding + stepX * index;
+    const normalizedWeight = (entry.weight - minWeight) / range;
+    const y = padding + chartHeight - (normalizedWeight * chartHeight);
+    
+    ctx.beginPath();
+    ctx.arc(x, y, 4, 0, Math.PI * 2);
+    ctx.fill();
+  });
+  
+  ctx.fillStyle = '#A39C90';
+  ctx.font = '10px "JetBrains Mono", monospace';
+  ctx.textAlign = 'right';
+  
+  for (let i = 0; i <= 4; i++) {
+    const weight = minWeight + (range / 4) * (4 - i);
+    const y = padding + (chartHeight / 4) * i;
+    ctx.fillText(weight.toFixed(0) + 'kg', padding - 10, y + 4);
+  }
+  
+  ctx.textAlign = 'center';
+  recentHistory.forEach((entry, index) => {
+    if (index % Math.ceil(recentHistory.length / 5) === 0 || index === recentHistory.length - 1) {
+      const x = padding + stepX * index;
+      const date = new Date(entry.date + 'T00:00:00');
+      const label = date.getDate() + '/' + (date.getMonth() + 1);
+      ctx.fillText(label, x, height - 10);
+    }
+  });
 }
 
 window.addEventListener('DOMContentLoaded', loadWeights);
