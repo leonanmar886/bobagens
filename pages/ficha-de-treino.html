@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ficha de Treino — Hipertrofia 5 Dias</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+:root{
+  --bg: #1B1F22;
+  --panel: #23282C;
+  --panel-2: #2B3136;
+  --bone: #EDE7DD;
+  --bone-dim: #A39C90;
+  --bone-faint: #7D766B;
+  --oxide: #C4502E;
+  --oxide-text: #FFEFE7;
+  --brass: #C9A227;
+  --brass-text: #20180A;
+  --steel: #6E7C76;
+  --steel-text: #EAF0EC;
+  --line: rgba(237,231,221,0.10);
+  --line-strong: rgba(237,231,221,0.18);
+  --radius: 10px;
+}
+
+*{box-sizing:border-box;}
+html{-webkit-text-size-adjust:100%;}
+body{
+  margin:0;
+  background:var(--bg);
+  background-image:
+    radial-gradient(circle at 8% 0%, rgba(196,80,46,0.07), transparent 45%),
+    radial-gradient(circle at 95% 18%, rgba(201,162,39,0.06), transparent 40%);
+  color:var(--bone);
+  font-family:'Inter', system-ui, sans-serif;
+  line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+}
+
+a{color:inherit;}
+:focus-visible{outline:2px solid var(--brass); outline-offset:2px;}
+
+.wrap{
+  max-width:760px;
+  margin:0 auto;
+  padding:32px 20px 64px;
+}
+
+/* ---------- HERO ---------- */
+.eyebrow{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  font-family:'JetBrains Mono', monospace;
+  font-size:11px;
+  letter-spacing:0.14em;
+  text-transform:uppercase;
+  color:var(--bone-dim);
+  border:1px solid var(--line-strong);
+  padding:5px 10px;
+  border-radius:999px;
+}
+.eyebrow .plate{
+  width:8px;height:8px;border-radius:50%;
+  background:var(--oxide);
+  box-shadow:0 0 0 2px rgba(196,80,46,0.25);
+}
+
+h1.title{
+  font-family:'Bebas Neue', sans-serif;
+  font-weight:400;
+  letter-spacing:0.01em;
+  font-size:clamp(38px, 9vw, 58px);
+  line-height:0.98;
+  margin:18px 0 14px;
+  color:var(--bone);
+}
+h1.title span{color:var(--oxide);}
+
+.lede{
+  max-width:560px;
+  color:var(--bone-dim);
+  font-size:15px;
+  margin:0 0 30px;
+}
+.lede strong{color:var(--bone); font-weight:600;}
+
+/* ---------- TIMELINE (signature element) ---------- */
+.timeline-section{
+  margin-bottom:38px;
+}
+.timeline-label{
+  font-family:'JetBrains Mono', monospace;
+  font-size:11px;
+  letter-spacing:0.12em;
+  text-transform:uppercase;
+  color:var(--bone-faint);
+  margin-bottom:14px;
+}
+.timeline{
+  overflow-x:auto;
+  padding-bottom:6px;
+  -ms-overflow-style:none;
+  scrollbar-width:none;
+}
+.timeline::-webkit-scrollbar{display:none;}
+.tl-track{
+  position:relative;
+  display:flex;
+  min-width:580px;
+  padding:7px 2px 0;
+}
+.tl-line{
+  position:absolute;
+  left:6px; right:6px; top:14px;
+  height:2px;
+  background:var(--line-strong);
+  z-index:0;
+}
+.tl-item{
+  position:relative;
+  z-index:1;
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:10px;
+}
+.tl-dot{
+  width:14px; height:14px; border-radius:50%;
+  background:var(--bg);
+}
+.tl-dot.train.oxide{background:var(--oxide); box-shadow:0 0 0 4px rgba(196,80,46,0.18);}
+.tl-dot.train.brass{background:var(--brass); box-shadow:0 0 0 4px rgba(201,162,39,0.18);}
+.tl-dot.rest{
+  background:transparent;
+  border:2px dashed var(--steel);
+  width:12px; height:12px;
+}
+.tl-day{
+  font-family:'JetBrains Mono', monospace;
+  font-size:11px;
+  color:var(--bone-dim);
+  letter-spacing:0.04em;
+}
+.tl-tag{
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:0.04em;
+  padding:3px 7px;
+  border-radius:5px;
+  white-space:nowrap;
+}
+.tl-tag.oxide{background:var(--oxide); color:var(--oxide-text);}
+.tl-tag.brass{background:var(--brass); color:var(--brass-text);}
+.tl-tag.rest{background:transparent; color:var(--bone-faint); border:1px dashed var(--line-strong);}
+
+/* ---------- WEEK LOG ---------- */
+.log-label{
+  font-family:'JetBrains Mono', monospace;
+  font-size:11px;
+  letter-spacing:0.12em;
+  text-transform:uppercase;
+  color:var(--bone-faint);
+  margin-bottom:14px;
+}
+
+.day-card{
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-left:4px solid var(--oxide);
+  border-radius:var(--radius);
+  padding:20px 20px 16px;
+  margin-bottom:14px;
+}
+.day-card.brass-edge{border-left-color:var(--brass);}
+
+.day-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:10px;
+  margin-bottom:14px;
+}
+.day-head .meta{
+  font-family:'JetBrains Mono', monospace;
+  font-size:11px;
+  color:var(--bone-faint);
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+  margin-bottom:4px;
+}
+.day-head h2{
+  font-family:'Bebas Neue', sans-serif;
+  font-weight:400;
+  font-size:26px;
+  margin:0 0 4px;
+  letter-spacing:0.01em;
+}
+.day-head .focus{
+  font-size:12.5px;
+  color:var(--bone-dim);
+}
+.counter{
+  font-family:'JetBrains Mono', monospace;
+  font-size:12px;
+  color:var(--bone-dim);
+  border:1px solid var(--line-strong);
+  border-radius:999px;
+  padding:4px 10px;
+  white-space:nowrap;
+  flex-shrink:0;
+}
+
+.exline{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:10px 0;
+  border-top:1px solid var(--line);
+  cursor:pointer;
+}
+.day-card .exline:first-of-type{border-top:none;}
+
+.exline input{
+  appearance:none;
+  width:18px; height:18px;
+  border-radius:50%;
+  border:2px solid var(--line-strong);
+  flex-shrink:0;
+  position:relative;
+  cursor:pointer;
+}
+.day-card .exline input{accent-color:var(--oxide);}
+.day-card.brass-edge .exline input{accent-color:var(--brass);}
+.exline input:checked{background:var(--bone-faint); border-color:var(--bone-faint);}
+.exline input:checked::after{
+  content:"";
+  position:absolute; left:5px; top:1px;
+  width:5px; height:9px;
+  border:solid var(--panel);
+  border-width:0 2px 2px 0;
+  transform:rotate(45deg);
+}
+
+.exname{
+  flex:1;
+  font-size:14.5px;
+  font-weight:500;
+  color:var(--bone);
+}
+.exline:has(input:checked) .exname{
+  text-decoration:line-through;
+  color:var(--bone-faint);
+}
+.exsets{
+  font-family:'JetBrains Mono', monospace;
+  font-size:13.5px;
+  color:var(--bone-dim);
+  flex-shrink:0;
+}
+
+.day-foot{
+  margin-top:10px;
+  padding-top:10px;
+  border-top:1px solid var(--line);
+  font-size:12px;
+  color:var(--bone-faint);
+  font-style:italic;
+}
+
+/* ---------- REST DIVIDER ---------- */
+.rest-row{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  margin:10px 4px 18px;
+}
+.rest-row .rl{
+  flex:1;
+  height:0;
+  border-top:1px dashed var(--line-strong);
+}
+.rest-row .rest-pill{
+  font-family:'JetBrains Mono', monospace;
+  font-size:11px;
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+  color:var(--bone-faint);
+  white-space:nowrap;
+  display:flex;
+  align-items:center;
+  gap:7px;
+}
+.rest-row .rest-pill .dot{
+  width:8px;height:8px;border-radius:50%;
+  border:2px dashed var(--steel);
+}
+
+/* ---------- OBSERVATIONS ---------- */
+.notes{
+  margin-top:30px;
+  background:var(--panel-2);
+  border:1px dashed var(--line-strong);
+  border-radius:var(--radius);
+  padding:20px 22px;
+}
+.notes h3{
+  font-family:'Bebas Neue', sans-serif;
+  font-weight:400;
+  font-size:20px;
+  margin:0 0 12px;
+  letter-spacing:0.02em;
+}
+.notes ul{
+  margin:0; padding:0; list-style:none;
+}
+.notes li{
+  display:flex;
+  gap:10px;
+  font-size:13.5px;
+  color:var(--bone-dim);
+  padding:7px 0;
+}
+.notes li::before{
+  content:"";
+  flex-shrink:0;
+  margin-top:5px;
+  width:9px; height:9px;
+  border-radius:50%;
+  background:var(--brass);
+  box-shadow:inset 0 0 0 2px var(--panel-2);
+}
+.notes li strong{color:var(--bone); font-weight:600;}
+
+.foot-note{
+  margin-top:24px;
+  font-size:12px;
+  color:var(--bone-faint);
+  text-align:center;
+}
+
+@media (max-width:480px){
+  .day-head{flex-direction:column;}
+  .counter{align-self:flex-start;}
+}
+
+@media (prefers-reduced-motion:no-preference){
+  .day-card, .exline{transition:border-color .15s ease;}
+}
+
+@media print{
+  body{background:#fff; color:#111;}
+  .day-card{background:#fff; border-color:#ccc;}
+  .eyebrow,.tl-tag.oxide,.tl-tag.brass{background:#eee; color:#111;}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="eyebrow"><span class="plate"></span>Ficha de Treino · Iniciante</div>
+  <h1 class="title">5 dias de treino,<br>foco em <span>superiores</span>.</h1>
+  <p class="lede">Divisão com <strong>3 dias de membros superiores</strong> e <strong>2 dias de membros inferiores</strong>, intercalados ao longo da semana. Os treinos de superiores alternam padrões — empurrar, puxar e ombros — para que o mesmo músculo nunca seja exigido em dias consecutivos, mesmo quando os dias de treino se repetem.</p>
+
+  <div class="timeline-section">
+    <div class="timeline-label">Sequência da semana</div>
+    <div class="timeline">
+      <div class="tl-track">
+        <div class="tl-line"></div>
+
+        <div class="tl-item">
+          <div class="tl-dot train oxide"></div>
+          <div class="tl-day">SEG</div>
+          <div class="tl-tag oxide">SUP A</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot train brass"></div>
+          <div class="tl-day">TER</div>
+          <div class="tl-tag brass">INF A</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot train oxide"></div>
+          <div class="tl-day">QUA</div>
+          <div class="tl-tag oxide">SUP B</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot rest"></div>
+          <div class="tl-day">QUI</div>
+          <div class="tl-tag rest">DESC</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot train brass"></div>
+          <div class="tl-day">SEX</div>
+          <div class="tl-tag brass">INF B</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot train oxide"></div>
+          <div class="tl-day">SÁB</div>
+          <div class="tl-tag oxide">SUP C</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot rest"></div>
+          <div class="tl-day">DOM</div>
+          <div class="tl-tag rest">DESC</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="log-label">Treinos da semana</div>
+
+  <!-- DIA 1 -->
+  <div class="day-card">
+    <div class="day-head">
+      <div>
+        <div class="meta">Seg · Dia 1</div>
+        <h2>Superior A</h2>
+        <div class="focus">Push — Peito · Ombro · Tríceps</div>
+      </div>
+      <div class="counter" data-counter="d1">0/5</div>
+    </div>
+
+    <label class="exline"><input type="checkbox" onchange="updateCount('d1')"><span class="exname">Supino reto (barra ou máquina)</span><span class="exsets">3×10–12</span></label>
+    <label class="exline"><input type="checkbox" onchange="updateCount('d1')"><span class="exname">Supino inclinado com halteres</span><span class="exsets">3×10–12</span></label>
+    <label class="exline"><input type="checkbox" onchange="updateCount('d1')"><span class="exname">Desenvolvimento de ombros sentado</span><span class="exsets">3×10–12</span></label>
+    <label class="exline"><input type="checkbox" onchange="updateCount('d1')"><span class="exname">Elevação lateral</span><span class="exsets">3×12–15</span></label>
+    <label class="exline"><input type="checkbox" onchange="updateCount('d1')"><span class="exname">Tríceps na polia</span><span class="exsets">3×12–15</span></label>
+
+    <div class="day-foot">Descanso entre séries: 60–90s</div>
+  </div>
+
+  <!-- DIA 2 -->
+  <div class="day-card brass-edge">
+    <div class="day-head">
+      <div>
+        <div class="meta">Ter · Dia 2</div>
+        <h2>Inferior A</h2>
+        <div class="focus">Quadríceps · Glúteo</div>
+      </div>
+      <div class="counter" data-counter="d2">0/5</div>
+    </div>
+
+    <label class="exline"><input type="checkbox" onchange="updateCount('d2')"><span class="exname">Leg press 45°</span><span class="exsets">4×10–12</span></label>
+    <label class="exline"><input type="checkbox" onchange="updateCount('d2')"><span class="exname">Agachamento na máquina (Smith ou livre)</span><span class="exsets">3×10–12</span></label>
+    <label class="exline"><input type="checkbox" onchange="updateCount('d2')"><span class="exname">Cadeira extensora</span><span class="exsets">3×12–15</span></label>
+    <label class="exline"><input type="checkbox" onchange="updateCount('d2')"><span class="exname">Cadeira adutora</span><span class="exsets">3×15</span></label>
+    <label class="exline"><input type="checkbox" onchange="updateCount('d2')"><span class="exname">Panturrilha em pé</span><span class="exsets">3×15–20</span></label>
+
+    <div class="day-foot">Descanso entre séries: 60–90s</div>
+  </div>
+
+  <!-- DIA 3 -->
+  <div class="day-card">
+    <div class="day-head">
+      <div>
+        <div class="meta">Qua · Dia 3</div>
+        <h2>Superior B</h2>
+        <div class="focus">Pull — Costas · Bíceps</div>
+      </div>
+      <div class="counter" data-counter="d3">0/5</div>
+    </div>
+
+    <label class="exline"><input type="checkbox" onchange="updateCount('d3')"><span class="exname">Puxada articulada (máquina)</span><span class="exsets">3×10–12</span></label>
+    <label class="exline"><input type="checkbox" onchange="updateCount('d3')"><span class="exname">Remada baixa no cabo</span><span class="exsets">3×10–12</span></label>
+    <label class="exline"><input type="checkbox" onchange="updateCount('d3')"><span class="exname">Remada unilateral com halter</span><span class="exsets">3×10–12</span></label>
+    <label class="exline"><input type="checkbox" onchange="updateCount('d3')"><span class="exname">Rosca direta</span><span class="exsets">3×10–12</span></label>
+    <label class="exline"><input type="checkbox" onchange="updateCount('d3')"><span class="exname">Rosca alternada</span><span class="exsets">3×12</span></label>
+
+    <div class="day-foot">Descanso entre séries: 60–90s</div>
+  </div>
+
+  <div class="rest-row">
+    <div class="rl"></div>
+    <div class="rest-pill"><span class="dot"></span>Qui · Dia 4 — Descanso</div>
+    <div class="rl"></div>
+  </div>
+
+  <!-- DIA 5 -->
+  <div class="day-card brass-edge">
+    <div class="day-head">
+      <div>
+        <div class="meta">Sex · Dia 5</div>
+        <h2>Inferior B</h2>
+        <div class="focus">Posterior de coxa · Glúteo</div>
+      </div>
+      <div class="counter" data-counter="d5">0/5</div>
+    </div>
+
+    <label class="exline"><input type="checkbox" onchange="updateCount('d5')"><span class="exname">Stiff com halteres ou barra</span><span class="exsets">3×10–12</span></label>
+    <label class="exline"><input type="checkbox" onchange="updateCount('d5')"><span class="exname">Mesa flexora</span><span class="exsets">3×12–15</span></label>
+    <label class="exline"><input type="checkbox" onchange="updateCount('d5')"><span class="exname">Cadeira abdutora</span><span class="exsets">3×15</span></label>
+    <label class="exline"><input type="checkbox" onchange="updateCount('d5')"><span class="exname">Elevação pélvica (hip thrust)</span><span class="exsets">3×12–15</span></label>
+    <label class="exline"><input type="checkbox" onchange="updateCount('d5')"><span class="exname">Panturrilha sentado</span><span class="exsets">3×15–20</span></label>
+
+    <div class="day-foot">Descanso entre séries: 60–90s</div>
+  </div>
+
+  <!-- DIA 6 -->
+  <div class="day-card">
+    <div class="day-head">
+      <div>
+        <div class="meta">Sáb · Dia 6</div>
+        <h2>Superior C</h2>
+        <div class="focus">Ombros · Braços</div>
+      </div>
+      <div class="counter" data-counter="d6">0/6</div>
+    </div>
+
+    <label class="exline"><input type="checkbox" onchange="updateCount('d6')"><span class="exname">Desenvolvimento militar</span><span class="exsets">3×10–12</span></label>
+    <label class="exline"><input type="checkbox" onchange="updateCount('d6')"><span class="exname">Elevação lateral</span><span class="exsets">3×12–15</span></label>
+    <label class="exline"><input type="checkbox" onchange="updateCount('d6')"><span class="exname">Crucifixo invertido (deltoide posterior)</span><span class="exsets">3×12–15</span></label>
+    <label class="exline"><input type="checkbox" onchange="updateCount('d6')"><span class="exname">Crucifixo na máquina (peck deck)</span><span class="exsets">3×12</span></label>
+    <label class="exline"><input type="checkbox" onchange="updateCount('d6')"><span class="exname">Tríceps corda</span><span class="exsets">3×12</span></label>
+    <label class="exline"><input type="checkbox" onchange="updateCount('d6')"><span class="exname">Rosca scott</span><span class="exsets">3×12</span></label>
+
+    <div class="day-foot">Descanso entre séries: 60–90s</div>
+  </div>
+
+  <div class="rest-row">
+    <div class="rl"></div>
+    <div class="rest-pill"><span class="dot"></span>Dom · Dia 7 — Descanso</div>
+    <div class="rl"></div>
+  </div>
+
+  <div class="notes">
+    <h3>Observações práticas</h3>
+    <ul>
+      <li><strong>Aquecimento:</strong> 5–10 min de cardio leve + mobilidade articular antes de cada treino.</li>
+      <li><strong>Progressão:</strong> aumente a carga quando completar todas as séries/reps com boa execução por 2 treinos seguidos.</li>
+      <li><strong>Técnica antes de carga:</strong> todos os exercícios foram escolhidos por terem curva de aprendizado baixa — priorize a execução correta.</li>
+      <li><strong>Sono e alimentação:</strong> proteína adequada e descanso são tão importantes quanto o treino para a hipertrofia.</li>
+    </ul>
+  </div>
+
+  <div class="foot-note">Marque os exercícios conforme for completando o treino do dia.</div>
+
+</div>
+
+<script>
+function updateCount(dayId){
+  const card = document.querySelector('[data-counter="' + dayId + '"]').closest('.day-card');
+  const boxes = card.querySelectorAll('input[type="checkbox"]');
+  const checked = card.querySelectorAll('input[type="checkbox"]:checked').length;
+  document.querySelector('[data-counter="' + dayId + '"]').textContent = checked + '/' + boxes.length;
+}
+</script>
+
+</body>
+</html>
