@@ -1,0 +1,11 @@
+{
+  "additionalDirectories": [
+    "C:\\Projects\\bobagens"
+  ],
+  "permissions": {
+    "allow": [
+      "Bash(git add pages/ficha-de-treino.html *)",
+      "Bash(git commit *)"
+    ]
+  }
+}
